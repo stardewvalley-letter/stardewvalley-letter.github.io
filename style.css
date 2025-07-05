@@ -1,0 +1,231 @@
+:root {
+    --stardew-green: #7ebc6f;
+    --stardew-brown: #8b5a2b;
+    --stardew-beige: #f5e7c6;
+    --stardew-dark: #3e2723;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Courier New', monospace;
+    background-color: #e9d8c5;
+    color: #3e2723;
+    cursor: url('assets/cursor.png'), auto; /* 设置自定义光标 */
+}
+
+label {
+    cursor: url('assets/cursor.png'), auto; /* 设置自定义光标 */
+}
+
+input, textarea, select, button {
+    cursor: url('assets/insert.png'), auto; /* 设置插入光标 */
+}
+
+.stardew-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    background-color: var(--stardew-beige);
+    border: 5px solid var(--stardew-brown);
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+h1, h2 {
+    color: var(--stardew-dark);
+    text-align: center;
+    font-weight: normal;
+    border-bottom: 2px dashed var(--stardew-brown);
+    padding-bottom: 10px;
+}
+
+.editor-container {
+    display: flex;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.control-panel {
+    flex: 0 0 300px;
+    background-color: rgba(126, 188, 111, 0.1);
+    padding: 15px;
+    border-radius: 10px;
+    border: 2px solid var(--stardew-green);
+}
+
+.control-group {
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 1px dashed var(--stardew-brown);
+}
+
+label {
+    display: block;
+    margin: 10px 0;
+    font-size: 14px;
+}
+
+input[type="text"], 
+textarea, 
+select {
+    width: 94%;
+    padding: 8px;
+    border: 2px solid var(--stardew-brown);
+    border-radius: 5px;
+    background-color: #f8f4e9;
+    font-family: inherit;
+    margin-top: 5px;
+}
+
+textarea {
+    height: 100px;
+    resize: vertical;
+}
+
+input[type="number"] {
+    width: 80px;
+    padding: 5px;
+    border: 2px solid var(--stardew-brown);
+    border-radius: 5px;
+    background-color: #f8f4e9;
+}
+
+button {
+    background-color: var(--stardew-green);
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: inherit;
+    display: block;
+    width: 100%;
+    margin: 10px 0;
+    transition: background-color 0.3s;
+    cursor: url('assets/insert.png'), auto; /* 设置插入光标 */
+}
+
+button:hover {
+    background-color: #6ca85e;
+    cursor: url('assets/insert.png'), auto; /* 设置插入光标 */
+}
+
+#save-btn {
+    background-color: var(--stardew-brown);
+    font-weight: bold;
+}
+
+#save-btn:hover {
+    background-color: #7a4a36;
+}
+
+.preview-panel {
+    flex: 1;
+    background-color: rgba(139, 90, 43, 0.05);
+    padding: 15px;
+    border-radius: 10px;
+    border: 2px solid var(--stardew-brown);
+}
+
+.preview-container {
+    background-color: white;
+    border: 3px solid var(--stardew-brown);
+    border-radius: 10px;
+    padding: 15px;
+    min-height: 600px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: auto;
+}
+
+canvas {
+    max-width: 100%;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* 控制面板与预览区域自适应 */
+@media (max-width: 768px) {
+    .stardew-container {
+        padding: 10px;
+    }
+
+    .editor-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .control-panel, .preview-panel {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    .control-group {
+        width: 100%;
+        margin-bottom: 15px;
+    }
+
+    input, textarea, select {
+        width: 100%;
+    }
+
+    button {
+        width: 100%;
+    }
+
+    /* 设置画布宽度和高度 */
+    #preview-canvas {
+        width: 100%;
+        max-width: 400px;
+        height: auto;
+    }
+}
+
+/* 更适合小屏幕的设置 */
+@media (max-width: 480px) {
+    h1 {
+        font-size: 24px;
+    }
+
+    .control-group label {
+        font-size: 14px;
+    }
+
+    input, textarea, select {
+        font-size: 14px;
+    }
+
+    button {
+        font-size: 16px;
+    }
+}
+
+/* 悬浮的音乐控制器 */
+.music-controller {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: var(--stardew-brown);
+    padding: 10px 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.music-controller button {
+    background-color: var(--stardew-green);
+    color: white;
+    padding: 10px 15px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: 'Courier New', monospace;
+    transition: background-color 0.3s;
+    cursor: url('assets/cursor.png'), auto; /* 设置自定义光标 */
+}
+
+.music-controller button:hover {
+    background-color: #6ca85e;
+}
+
