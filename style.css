@@ -250,6 +250,20 @@ button.color-settings img {
     }
 }
 
+@media (min-width: 769px) and (max-width: 1199px) {
+    .preview-panel {
+        position: static; /* 平板设备取消固定定位 */
+        transform: none;
+        width: 100%;
+        max-height: none;
+        margin-top: 20px;
+    }
+
+    .editor-container {
+        flex-direction: column; /* 垂直排列，避免遮挡 */
+    }
+}
+
 /* 小屏布局：上下排列 */
 @media (max-width: 768px) {
     .preview-wrapper {

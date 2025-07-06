@@ -375,29 +375,31 @@ function adjustCanvasSize() {
 }
 
 function positionPreviewPanel() {
-    const wrapper = document.querySelector('.preview-wrapper');
-    const panel = document.querySelector('.preview-panel');
+    const previewPanel = document.querySelector('.preview-panel');
+    const editorContainer = document.querySelector('.editor-container');
 
-    if (!wrapper || !panel) return;
+    const containerRect = editorContainer.getBoundingClientRect();
+    const previewPanelWidth = previewPanel.offsetWidth;
+    const windowWidth = window.innerWidth;
 
-    // 如果滚动位置未超过 200px，就不定位，防止遮挡顶部内容
-    if (window.scrollY < 100) {
-        panel.style.position = 'absolute';
-        panel.style.top = '200px'; // 固定在距顶部 200px 的位置
-        panel.style.left = '50%';
-        panel.style.transform = 'translateX(-50%)';
-        return;
+    // 判断是否为平板设备（宽度在 768px 到 1024px）
+    if (windowWidth >= 768 && windowWidth <= 1024) {
+        // 平板设备：切换为 static 定位，避免遮挡
+        previewPanel.style.position = 'static';
+        previewPanel.style.transform = 'none';
+        previewPanel.style.marginTop = '20px';
+    } else if (windowWidth - containerRect.left < previewPanelWidth + 320) {
+        // 空间不足：切换为 static 定位
+        previewPanel.style.position = 'static';
+        previewPanel.style.transform = 'none';
+        previewPanel.style.marginTop = '20px';
+    } else {
+        // 空间足够：使用 fixed 定位
+        previewPanel.style.position = 'fixed';
+        previewPanel.style.top = '50%';
+        previewPanel.style.transform = 'translateY(-50%)';
+        previewPanel.style.marginTop = '0';
     }
-
-    // 超过 200px 后进行居中悬浮定位
-    const wrapperRect = wrapper.getBoundingClientRect();
-    const wrapperCenter = wrapperRect.left + wrapperRect.width / 2;
-    const panelWidth = panel.offsetWidth;
-
-    panel.style.position = 'fixed';
-    panel.style.top = '50%';
-    panel.style.left = `${wrapperCenter - panelWidth / 2}px`;
-    panel.style.transform = 'translateY(-50%)';
 }
 
 // 更新预览区域文字颜色的函数
@@ -464,6 +466,21 @@ colorSettingsButtons.forEach(button => {
     });
 });
 
+function adjustPreviewPanelPosition(previewPanel, headerHeight) {
+    const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+    
+    // 如果页面滚动超过 h1 的高度，修改 preview-panel 的 top 值，避免遮挡
+    if (scrollTop < headerHeight) {
+        previewPanel.style.position = 'absolute';
+        previewPanel.style.top = `${scrollTop + 40}px`;  // 保持与页面顶部有间隔
+        previewPanel.style.transform = 'none';  // 取消 translateY 调整
+    } else {
+        previewPanel.style.position = 'fixed';
+        previewPanel.style.top = '50%';
+        previewPanel.style.transform = 'translateY(-50%)';  // 使其垂直居中
+    }
+}
+
 // 点击页面的任何地方关闭颜色选择器
 document.addEventListener('click', (e) => {
     if (!e.target.closest('.color-settings') && !e.target.closest('.color-picker')) {
@@ -497,9 +514,21 @@ window.addEventListener('click', (event) => {
     }
 });
 
+window.addEventListener('DOMContentLoaded', () => {
+    const previewPanel = document.querySelector('.preview-panel');
+    const headerHeight = document.querySelector('h1').offsetHeight;  // 获取 h1 的高度
+
+    // 调用一次，设置初始状态
+    adjustPreviewPanelPosition(previewPanel, headerHeight);
+
+    // 监听滚动事件
+    window.addEventListener('scroll', adjustPreviewPanelPosition);
+});
+
 window.addEventListener('load', positionPreviewPanel);
 window.addEventListener('resize', positionPreviewPanel);
 window.addEventListener('scroll', positionPreviewPanel);
+window.addEventListener('DOMContentLoaded', positionPreviewPanel);
 
 window.addEventListener('resize', adjustCanvasSize);
 adjustCanvasSize(); // 初始化时调整画布大小
