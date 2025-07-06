@@ -258,6 +258,8 @@ function updatePreview() {
 
         // 绘制标题
         const title = document.getElementById('title').value;
+        const titleColor = document.getElementById('title').getAttribute('data-color') || '#3c281e';
+        ctx.fillStyle = titleColor;
         const titleLines = wrapText(ctx, title, canvas.width - 2 * marginH);
         let y = marginTop;
 
@@ -268,6 +270,8 @@ function updatePreview() {
 
         // 绘制正文
         const body = document.getElementById('body').value;
+        const bodyColor = document.getElementById('body').getAttribute('data-color') || '#3c281e';
+        ctx.fillStyle = bodyColor;
         const bodyLines = wrapText(ctx, body, canvas.width - 2 * marginH);
 
         y += 10;
@@ -278,6 +282,8 @@ function updatePreview() {
 
         // 绘制署名
         const signature = document.getElementById('signature').value;
+        const signatureColor = document.getElementById('signature').getAttribute('data-color') || '#3c281e';
+        ctx.fillStyle = signatureColor;
         if (signature) {
             ctx.font = `${fontSize}px KNMaiyuan`;
             const signatureLines = wrapText(ctx, signature, canvas.width - 2 * marginH);
@@ -302,6 +308,8 @@ function updatePreview() {
             giftImage.src = giftImg.path + timestamp; // 添加随机参数解决缓存污染
             giftImage.onload = () => {
                 const giftText = document.getElementById('gift-text').value;
+                const giftTextColor = document.getElementById('gift-text').getAttribute('data-color') || '#3c281e';
+                ctx.fillStyle = giftTextColor;
                 const giftFontSize = parseInt(document.getElementById('gift-font-size').value);
                 const giftIconSize = parseInt(document.getElementById('gift-icon-size').value);
                 const textPosition = document.getElementById('gift-text-position').value;
@@ -392,13 +400,77 @@ function positionPreviewPanel() {
     panel.style.transform = 'translateY(-50%)';
 }
 
+// 更新预览区域文字颜色的函数
+function updatePreviewColor(targetId, color) {
+    // 更新颜色到全局变量或 DOM 元素
+    const targetElement = document.getElementById(targetId);
+    if (targetElement) {
+        targetElement.setAttribute('data-color', color); // 保存颜色到元素属性
+    }
+
+    // 重新渲染预览区域
+    updatePreview();
+}
+
+// 获取所有设置按钮和颜色选择器
+const colorSettingsButtons = document.querySelectorAll('.color-settings');
+const colorPickers = {};
+
+colorSettingsButtons.forEach(button => {
+    const target = button.getAttribute('data-target');
+    
+    // 监听按钮点击事件
+    button.addEventListener('click', (e) => {
+        // 防止事件冒泡，确保点击按钮时不会触发隐藏颜色选择器
+        e.stopPropagation();
+
+        // 创建并显示颜色选择器
+        if (!colorPickers[target]) {
+            const colorPicker = document.createElement('div');
+            colorPicker.classList.add('color-picker');
+            colorPicker.innerHTML = `
+                <input type="color" value="#000000" />
+            `;
+            colorPickers[target] = colorPicker;
+            document.body.appendChild(colorPicker);
+
+            const rect = button.getBoundingClientRect();
+            // 设置颜色选择器在按钮下方显示
+            colorPicker.style.top = `${rect.bottom + window.scrollY + 5}px`;
+            colorPicker.style.left = `${rect.left + window.scrollX}px`;
+
+            // 监听颜色变化事件
+            colorPicker.querySelector('input').addEventListener('input', (e) => {
+                const color = e.target.value;
+                // 更新预览区中相应区域的颜色
+                updatePreviewColor(target, color);
+            });
+        } else {
+            // 显示已存在的颜色选择器
+            colorPickers[target].style.display = 'block';
+        }
+    });
+});
+
+// 点击页面的任何地方关闭颜色选择器
+document.addEventListener('click', (e) => {
+    if (!e.target.closest('.color-settings') && !e.target.closest('.color-picker')) {
+        Object.values(colorPickers).forEach(picker => {
+            picker.style.display = 'none';
+        });
+    }
+});
+
+
 // 获取“与我联系”按钮和弹出窗口
 const contactBtn = document.getElementById('contact-link');
 const contactModal = document.getElementById('contact-modal');
 const closeModal = document.getElementById('close-modal');
 
 // 点击“与我联系”按钮时显示弹出窗口
-contactBtn.addEventListener('click', () => {
+contactBtn.addEventListener('click', (event) => {
+    event.preventDefault(); // 阻止跳转
+    // 显示弹出窗口
     contactModal.style.display = 'block';
 });
 

@@ -23,46 +23,112 @@
                 <!-- 信件内容区域 -->
                 <div class="control-group">
                     <h2><img src="assets/mail.png" alt="信件内容" class="icon">信件内容</h2>
-                    <label>标题：<input type="text" id="title" placeholder="信件标题"></label>
-                    <label>正文：<textarea id="body" placeholder="输入信件内容..."></textarea></label>
-                    <label>署名：<input type="text" id="signature" placeholder="您的名字"></label>
+                    
+                    <div class="input-container">
+                        <label>标题：</label>
+                        <input type="text" id="title" placeholder="信件标题">
+                        <button class="color-settings" data-target="title">
+                            <img src="assets/setting.png" alt="设置颜色" />
+                        </button>
+                    </div>
+                    
+                    <div class="input-container">
+                        <label>正文：</label>
+                        <textarea id="body" placeholder="输入信件内容..."></textarea>
+                        <button class="color-settings" data-target="body">
+                            <img src="assets/setting.png" alt="设置颜色" />
+                        </button>
+                    </div>
+                    
+                    <div class="input-container">
+                        <label>署名：</label>
+                        <input type="text" id="signature" placeholder="您的名字">
+                        <button class="color-settings" data-target="signature">
+                            <img src="assets/setting.png" alt="设置颜色" />
+                        </button>
+                    </div>
                 </div>
                 
                 <!-- 礼物设置区域 -->
                 <div class="control-group">
                     <h2><img src="assets/junimo.png" alt="礼物" class="icon">礼物</h2>
-                    <label>礼物说明：<input type="text" id="gift-text" placeholder="礼物描述"></label>
-                    <label>礼物图标：
+
+                    <div class="input-container">
+                        <label>礼物说明：</label>
+                        <input type="text" id="gift-text" placeholder="礼物描述">
+                        <button class="color-settings" data-target="gift-text">
+                            <img src="assets/setting.png" alt="设置颜色" />
+                        </button>
+                    </div>
+                
+                    <div class="input-container">
+                        <label>礼物图标：</label>
                         <select id="gift-img">
                             <option value="none">无</option>
                             <!-- 选项由JS动态生成 -->
                         </select>
-                    </label>
-                    <label>说明字体大小：<input type="number" id="gift-font-size" min="8" max="40" value="30"></label>
-                    <label>图标大小：<input type="number" id="gift-icon-size" min="24" max="128" value="64"></label>
-                    <label>说明位置：
+                    </div>
+
+                    <div class="input-container">
+                        <label>说明字体大小：</label>
+                        <input type="number" id="gift-font-size" min="8" max="40" value="30">
+                    </div>
+
+                    <div class="input-container">
+                        <label>图标大小：</label>
+                        <input type="number" id="gift-icon-size" min="24" max="128" value="64">
+                    </div>
+                    <div class="input-container">
+                        <label>说明位置：</label>
                         <select id="gift-text-position">
                             <option value="before">图标前</option>
                             <option value="after">图标后</option>
                         </select>
-                    </label>
+                    </div>
                 </div>
                 
                 <!-- 信纸设置区域 -->
                 <div class="control-group">
                     <h2><img src="assets/mail_style.png" alt="信纸与样式" class="icon">信纸与样式</h2>
-                    <label>信纸选择：
+                    
+                    <div class="input-container">
+                        <label>信纸选择：</label>
                         <select id="mail-img">
                             <!-- 选项由JS动态生成 -->
                         </select>
-                    </label>
-                    <button id="upload-mail">上传自定义信纸</button>
-                    <button id="upload-gift">上传自定义礼物</button>
-                    <label>字体大小：<input type="number" id="font-size" min="10" max="60" value="36"></label>
-                    <label>上边距：<input type="number" id="margin-top" min="0" max="100" value="64"></label>
-                    <label>下边距：<input type="number" id="margin-bottom" min="0" max="100" value="81"></label>
-                    <label>左右边距：<input type="number" id="margin-h" min="0" max="100" value="64"></label>
-                    <button id="save-btn">保存为图片</button>
+                    </div>
+
+                    <div class="input-container">
+                        <button id="upload-mail">上传自定义信纸</button>
+                    </div>
+
+                    <div class="input-container">
+                        <button id="upload-gift">上传自定义礼物</button>
+                    </div>
+
+                    <div class="input-container">
+                        <label>字体大小：</label>
+                        <input type="number" id="font-size" min="10" max="60" value="36">
+                    </div>
+
+                    <div class="input-container">
+                        <label>上边距：</label>
+                        <input type="number" id="margin-top" min="0" max="100" value="64">
+                    </div>
+
+                    <div class="input-container">
+                        <label>下边距：</label>
+                        <input type="number" id="margin-bottom" min="0" max="100" value="81">
+                    </div>
+
+                    <div class="input-container">
+                        <label>左右边距：</label>
+                        <input type="number" id="margin-h" min="0" max="100" value="64">
+                    </div>
+
+                    <div class="input-container">
+                        <button id="save-btn">保存为图片</button>
+                    </div>
                 </div>
             </div>
             
@@ -86,8 +152,8 @@
     </div>
 
     <div class="footer">
-        <p>© 2025 星露谷信件生成器 | 版权所有 | </p>
-        <a href="#" id="contact-link">与我联系</a>
+        <p>© 2025 星露谷信件生成器 | </p>
+        <a href="#" id="contact-link">联系农夫</a>
     </div>
 
     <div id="contact-modal" class="contact-modal">
@@ -95,10 +161,21 @@
             <span id="close-modal" class="close-btn">
                 <img src="assets/close_u.png" alt="关闭" />
             </span>
-            <h3>与我联系</h3>
-            <p>感谢您的使用，欢迎通过以下链接与我联系或支持：</p>
-            <p><a href="https://www.xiaohongshu.com" target="_blank">我的小红书</a></p>
-            <img src="assets/payment-qr.png" alt="支付二维码" class="qr-code" />
+        <h3>联系农夫☀️</h3>
+        <p>叮！📬 嗨，亲爱的农场邻居！</p>
+        <p>欢迎你来到这个小小驿站！如果你对网站有任何想法、建议，或者发现了需要修理的“小虫子”（Bug），甚至只是想聊聊星露谷的趣事，都非常欢迎告诉我！</p>
+        <p>我最常在小红书上分享网站更新、灵感碎片或星露谷的日常点滴。来我的线上“杂货店公告板”逛逛吧：</p>
+        <p><strong>📍 小红书：<a href="https://www.xiaohongshu.com/user/profile/610355e50000000001002cde" target="_blank">@momo</a></strong> (点击链接访问 🍠)</p>
+
+        <p>制作这个小农场，像照顾真正的星露谷一样，需要持续的“浇水”和热情。如果你喜欢这些能传递温暖的电子信件，并愿意支持我继续播种新想法、维护这片小天地，可以考虑请我喝杯农夫特饮（茶）。这能给我满满的“体力值”去创造更多！☕️ 💖</p>
+
+        <p>（自愿支持，金额不限，感谢你的每一份心意！）</p>
+        
+        <img src="assets/payment-qr.png" alt="支付二维码" class="qr-code" />
+        
+        <p>再次感谢你的到来和支持！愿你的信箱总是装满温情，农场总是阳光明媚！🌻</p>
+        
+        <p>- 来自你的星露谷邮差朋友，Joyin</p>
         </div>
     </div>
 

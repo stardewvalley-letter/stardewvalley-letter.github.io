@@ -18,11 +18,21 @@ body {
 }
 
 label {
+    display: flex;
+    align-items: center;
+    margin: 10px 0;
+    font-size: 14px;
+    font-family: 'KNMaiyuan', sans-serif;
     cursor: url('assets/cursor_default.cur'), auto; /* 设置自定义光标 */
 }
 
 input, textarea, select, button {
     cursor: url('assets/cursor_insert.cur'), auto; /* 设置插入光标 */
+}
+
+button.color-settings {
+    margin-left: 10px;  /* 给按钮留出间距 */
+    padding: 5px;
 }
 
 .stardew-container {
@@ -82,13 +92,6 @@ h1, h2 {
     margin-right: 8px;
 }
 
-label {
-    display: block;
-    margin: 10px 0;
-    font-size: 14px;
-    font-family: 'KNMaiyuan', sans-serif;
-}
-
 
 input[type="text"], 
 textarea, 
@@ -125,7 +128,7 @@ button {
     font-family: inherit;
     display: block;
     width: 100%;
-    margin: 10px 0;
+    margin: 2px 0;
     transition: background-color 0.3s;
     font-family: 'KNMaiyuan', sans-serif;
     cursor: url('assets/cursor_insert.cur'), auto; /* 设置插入光标 */
@@ -168,6 +171,30 @@ button:hover {
 canvas {
     max-width: 100%;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.input-container {
+    display: flex;             /* 使用 Flexbox 布局 */
+    align-items: center;       /* 垂直居中 */
+    border: 1px solid transparent; /* 去除边框的颜色，变透明 */
+}
+
+input, textarea {
+    flex: 1;               /* 输入框占满剩余空间 */
+    padding: 5px;          /* 输入框内的间距 */
+    border: 1px solid #ccc;  /* 输入框边框 */
+    border-radius: 5px;    /* 圆角 */
+}
+
+button.color-settings {
+    width: 20px;
+    height: 20px;
+    padding: 0;
+}
+
+button.color-settings img {
+    width: 100%;
+    height: 100%;
 }
 
 /* 控制面板与预览区域自适应 */
@@ -267,6 +294,7 @@ canvas {
     border: none;
     padding: 0;
     cursor: url('assets/cursor_default.cur'), auto; /* 设置自定义光标 */
+    margin: 10px 0;
 }
 
 .music-controller img {
@@ -296,11 +324,14 @@ canvas {
 /* 弹出窗口样式 */
 .contact-modal {
     display: none; /* 默认隐藏 */
+    font-size: 16px;
+    font-family: 'KNMaiyuan', sans-serif;
+    line-height: 1.6;
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 400px;
+    width: 1000px;
     background-color: rgba(139, 90, 43, 0.9); /* 星露谷风格的背景 */
     border-radius: 10px;
     padding: 20px;
@@ -308,10 +339,43 @@ canvas {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
 }
 
+/* 设置按钮样式 */
+.color-settings {
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin-left: 10px;
+    width: 20px; /* 设置按钮宽度 */
+    height: 20px; /* 设置按钮高度 */
+    padding: 0; /* 去除内边距 */
+}
+
+.color-settings img {
+    width: 20px;
+    height: 20px;
+}
+
+/* 弹出颜色选择器的样式 */
+.color-picker {
+    display: none;
+    position: absolute;
+    background-color: white;
+    border: 1px solid #ccc;
+    padding: 5px;
+    border-radius: 5px;
+    z-index: 999;
+}
+
+.color-picker input {
+    width: 40px;
+    height: 20px;
+    border: none;
+    cursor: pointer;
+}
+
 /* 弹出窗口内容 */
 .modal-content {
     color: white;
-    font-family: 'Arial', sans-serif;
 }
 
 /* 关闭按钮 */
@@ -332,11 +396,13 @@ canvas {
 .modal-content a {
     color: #ff6c6c;
     text-decoration: none;
+    cursor: url('assets/cursor_insert.cur'), auto;
 }
 
 /* 小红书链接 hover 效果 */
 .modal-content a:hover {
     text-decoration: underline;
+    cursor: url('assets/cursor_insert.cur'), auto;
 }
 
 /* 支付二维码 */
@@ -354,11 +420,12 @@ canvas {
     color: #ffb86c; /* 设置文字颜色 */
     text-decoration: none; /* 去掉下划线 */
     font-size: 14px; /* 设置与版权文本相同的字体大小 */
-    cursor: pointer; /* 设置手形光标 */
+    cursor: url('assets/cursor_insert.cur'), auto;
 }
 
 /* 与我联系链接 hover 效果 */
 #contact-link:hover {
     color: #ff9e3f; /* 设置 hover 时的颜色变化 */
     text-decoration: underline; /* 添加下划线 */
+    cursor: url('assets/cursor_insert.cur'), auto;
 }
