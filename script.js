@@ -366,6 +366,58 @@ function adjustCanvasSize() {
     updatePreview();
 }
 
+function positionPreviewPanel() {
+    const wrapper = document.querySelector('.preview-wrapper');
+    const panel = document.querySelector('.preview-panel');
+
+    if (!wrapper || !panel) return;
+
+    // 如果滚动位置未超过 200px，就不定位，防止遮挡顶部内容
+    if (window.scrollY < 150) {
+        panel.style.position = 'absolute';
+        panel.style.top = '200px'; // 固定在距顶部 200px 的位置
+        panel.style.left = '50%';
+        panel.style.transform = 'translateX(-50%)';
+        return;
+    }
+
+    // 超过 200px 后进行居中悬浮定位
+    const wrapperRect = wrapper.getBoundingClientRect();
+    const wrapperCenter = wrapperRect.left + wrapperRect.width / 2;
+    const panelWidth = panel.offsetWidth;
+
+    panel.style.position = 'fixed';
+    panel.style.top = '50%';
+    panel.style.left = `${wrapperCenter - panelWidth / 2}px`;
+    panel.style.transform = 'translateY(-50%)';
+}
+
+// 获取“与我联系”按钮和弹出窗口
+const contactBtn = document.getElementById('contact-link');
+const contactModal = document.getElementById('contact-modal');
+const closeModal = document.getElementById('close-modal');
+
+// 点击“与我联系”按钮时显示弹出窗口
+contactBtn.addEventListener('click', () => {
+    contactModal.style.display = 'block';
+});
+
+// 点击关闭按钮时隐藏弹出窗口
+closeModal.addEventListener('click', () => {
+    contactModal.style.display = 'none';
+});
+
+// 点击弹出窗口外部时也关闭窗口
+window.addEventListener('click', (event) => {
+    if (event.target === contactModal) {
+        contactModal.style.display = 'none';
+    }
+});
+
+window.addEventListener('load', positionPreviewPanel);
+window.addEventListener('resize', positionPreviewPanel);
+window.addEventListener('scroll', positionPreviewPanel);
+
 window.addEventListener('resize', adjustCanvasSize);
 adjustCanvasSize(); // 初始化时调整画布大小
 

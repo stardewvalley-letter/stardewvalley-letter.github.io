@@ -10,27 +10,34 @@ body {
     padding: 0;
     box-sizing: border-box;
     font-family: 'Courier New', monospace;
-    background-color: #e9d8c5;
-    color: #3e2723;
-    cursor: url('assets/cursor.png'), auto; /* 设置自定义光标 */
+    background-image: url('assets/background.png'); /* 背景图路径 */
+    background-size: cover; /* 确保背景图填满整个页面 */
+    background-position: center center; /* 背景图居中显示 */
+    background-repeat: no-repeat; /* 背景图不重复 */
+    cursor: url('assets/cursor_default.cur'), auto; /* 设置自定义光标 */
 }
 
 label {
-    cursor: url('assets/cursor.png'), auto; /* 设置自定义光标 */
+    cursor: url('assets/cursor_default.cur'), auto; /* 设置自定义光标 */
 }
 
 input, textarea, select, button {
-    cursor: url('assets/insert.png'), auto; /* 设置插入光标 */
+    cursor: url('assets/cursor_insert.cur'), auto; /* 设置插入光标 */
 }
 
 .stardew-container {
     max-width: 1400px;
     margin: 0 auto;
-    background-color: var(--stardew-beige);
+    background-color: rgba(245, 231, 198, 0.8);
     border: 5px solid var(--stardew-brown);
     border-radius: 15px;
     padding: 20px;
     box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+@font-face {
+    font-family: 'KNMaiyuan';  /* 自定义字体名称 */
+    src: url('assets/font/KNMaiyuan-Regular.ttf') format('truetype');  /* 字体文件的路径 */
 }
 
 h1, h2 {
@@ -39,6 +46,13 @@ h1, h2 {
     font-weight: normal;
     border-bottom: 2px dashed var(--stardew-brown);
     padding-bottom: 10px;
+    font-family: 'KNMaiyuan', sans-serif;
+}
+
+.control-group h2 {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .editor-container {
@@ -61,11 +75,20 @@ h1, h2 {
     border-bottom: 1px dashed var(--stardew-brown);
 }
 
+.icon {
+    width: 24px;
+    height: 24px;
+    vertical-align: middle;
+    margin-right: 8px;
+}
+
 label {
     display: block;
     margin: 10px 0;
     font-size: 14px;
+    font-family: 'KNMaiyuan', sans-serif;
 }
+
 
 input[type="text"], 
 textarea, 
@@ -104,12 +127,13 @@ button {
     width: 100%;
     margin: 10px 0;
     transition: background-color 0.3s;
-    cursor: url('assets/insert.png'), auto; /* 设置插入光标 */
+    font-family: 'KNMaiyuan', sans-serif;
+    cursor: url('assets/cursor_insert.cur'), auto; /* 设置插入光标 */
 }
 
 button:hover {
     background-color: #6ca85e;
-    cursor: url('assets/insert.png'), auto; /* 设置插入光标 */
+    cursor: url('assets/cursor_insert.cur'), auto; /* 设置插入光标 */
 }
 
 #save-btn {
@@ -147,40 +171,64 @@ canvas {
 }
 
 /* 控制面板与预览区域自适应 */
-@media (max-width: 768px) {
-    .stardew-container {
-        padding: 10px;
+@media (min-width: 1200px) {
+    .editor-container {
+        display: flex;
+        flex-direction: row;
+        align-items: flex-start;
+        gap: 20px;
     }
 
+    .control-panel {
+        width: 300px;
+        flex-shrink: 0;
+    }
+
+    .preview-wrapper {
+        flex: 1;
+        position: relative;
+        min-height: 1000px; /* 确保至少有400px的高度 */
+        height: 100%; /* 使预览区的高度与父容器一致 */
+        
+    }
+
+    .preview-panel {
+        position: fixed;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 600px;
+        max-height: calc(100vh - 120px);
+        overflow-y: auto;
+        z-index: 10;
+        background-color: rgba(139, 90, 43, 0.05);
+        padding: 15px;
+        border-radius: 10px;
+        border: 2px solid var(--stardew-brown);
+    }
+
+    .preview-container {
+        min-height: auto;
+    }
+}
+
+/* 小屏布局：上下排列 */
+@media (max-width: 768px) {
     .editor-container {
         display: flex;
         flex-direction: column;
         align-items: center;
     }
 
-    .control-panel, .preview-panel {
+    .control-panel,
+    .preview-wrapper {
         width: 100%;
         margin-bottom: 20px;
     }
 
-    .control-group {
+    .preview-panel {
+        position: static;
         width: 100%;
-        margin-bottom: 15px;
-    }
-
-    input, textarea, select {
-        width: 100%;
-    }
-
-    button {
-        width: 100%;
-    }
-
-    /* 设置画布宽度和高度 */
-    #preview-canvas {
-        width: 100%;
-        max-width: 400px;
-        height: auto;
+        max-height: none;
     }
 }
 
@@ -209,23 +257,108 @@ canvas {
     bottom: 20px;
     right: 20px;
     background-color: var(--stardew-brown);
-    padding: 10px 20px;
+    padding: 0px 12px;
     border-radius: 15px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
 
 .music-controller button {
-    background-color: var(--stardew-green);
-    color: white;
-    padding: 10px 15px;
-    border-radius: 10px;
-    cursor: pointer;
-    font-family: 'Courier New', monospace;
-    transition: background-color 0.3s;
-    cursor: url('assets/cursor.png'), auto; /* 设置自定义光标 */
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    cursor: url('assets/cursor_default.cur'), auto; /* 设置自定义光标 */
+}
+
+.music-controller img {
+    width: 40px;  /* 根据需要调整图标的大小 */
+    height: 40px;
 }
 
 .music-controller button:hover {
     background-color: #6ca85e;
 }
 
+.footer {
+    display: flex;
+    justify-content: center; /* 居中排列内容 */
+    align-items: center;
+    gap: 5px; /* 控制它们之间的间距 */
+    padding: 10px 20px;
+    background-color: #3e4021;
+    color: white;
+}
+
+.footer p {
+    margin: 0;
+    font-size: 14px;
+}
+
+/* 弹出窗口样式 */
+.contact-modal {
+    display: none; /* 默认隐藏 */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px;
+    background-color: rgba(139, 90, 43, 0.9); /* 星露谷风格的背景 */
+    border-radius: 10px;
+    padding: 20px;
+    z-index: 9999; /* 确保在最顶层 */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+/* 弹出窗口内容 */
+.modal-content {
+    color: white;
+    font-family: 'Arial', sans-serif;
+}
+
+/* 关闭按钮 */
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: 'assets/cursor_default.cur', auto; /* 设置指针光标 */
+}
+
+/* 关闭按钮的图片 */
+.close-btn img {
+    width: 24px;
+    height: 24px;
+}
+
+/* 小红书链接 */
+.modal-content a {
+    color: #ff6c6c;
+    text-decoration: none;
+}
+
+/* 小红书链接 hover 效果 */
+.modal-content a:hover {
+    text-decoration: underline;
+}
+
+/* 支付二维码 */
+.qr-code {
+    margin-top: 10px;
+    width: 120px;
+    height: 120px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* 与我联系链接样式 */
+#contact-link {
+    color: #ffb86c; /* 设置文字颜色 */
+    text-decoration: none; /* 去掉下划线 */
+    font-size: 14px; /* 设置与版权文本相同的字体大小 */
+    cursor: pointer; /* 设置手形光标 */
+}
+
+/* 与我联系链接 hover 效果 */
+#contact-link:hover {
+    color: #ff9e3f; /* 设置 hover 时的颜色变化 */
+    text-decoration: underline; /* 添加下划线 */
+}

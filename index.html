@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>星露谷信件生成器</title>
+    <link rel="icon" href="assets/favicon.png" type="image/png"> 
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -21,7 +22,7 @@
             <div class="control-panel">
                 <!-- 信件内容区域 -->
                 <div class="control-group">
-                    <h2>✉️ 信件内容</h2>
+                    <h2><img src="assets/mail.png" alt="信件内容" class="icon">信件内容</h2>
                     <label>标题：<input type="text" id="title" placeholder="信件标题"></label>
                     <label>正文：<textarea id="body" placeholder="输入信件内容..."></textarea></label>
                     <label>署名：<input type="text" id="signature" placeholder="您的名字"></label>
@@ -29,7 +30,7 @@
                 
                 <!-- 礼物设置区域 -->
                 <div class="control-group">
-                    <h2>🎁 礼物说明</h2>
+                    <h2><img src="assets/junimo.png" alt="礼物" class="icon">礼物</h2>
                     <label>礼物说明：<input type="text" id="gift-text" placeholder="礼物描述"></label>
                     <label>礼物图标：
                         <select id="gift-img">
@@ -49,7 +50,7 @@
                 
                 <!-- 信纸设置区域 -->
                 <div class="control-group">
-                    <h2>📜 信纸与样式</h2>
+                    <h2><img src="assets/mail_style.png" alt="信纸与样式" class="icon">信纸与样式</h2>
                     <label>信纸选择：
                         <select id="mail-img">
                             <!-- 选项由JS动态生成 -->
@@ -66,10 +67,12 @@
             </div>
             
             <!-- 右侧预览区域 -->
-            <div class="preview-panel">
-                <h2>信件预览</h2>
-                <div class="preview-container">
-                    <canvas id="preview-canvas"></canvas>
+            <div class="preview-wrapper">
+                <div class="preview-panel">
+                    <h2>信件预览</h2>
+                    <div class="preview-container">
+                        <canvas id="preview-canvas"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
@@ -77,7 +80,26 @@
 
     <!-- 音乐控制器 -->
     <div class="music-controller">
-        <button id="toggle-music">⏸</button>
+        <button id="toggle-music">
+            <img id="music-icon" src="assets/music_on.png" alt="音乐开关" />
+        </button>
+    </div>
+
+    <div class="footer">
+        <p>© 2025 星露谷信件生成器 | 版权所有 | </p>
+        <a href="#" id="contact-link">与我联系</a>
+    </div>
+
+    <div id="contact-modal" class="contact-modal">
+        <div class="modal-content">
+            <span id="close-modal" class="close-btn">
+                <img src="assets/close_u.png" alt="关闭" />
+            </span>
+            <h3>与我联系</h3>
+            <p>感谢您的使用，欢迎通过以下链接与我联系或支持：</p>
+            <p><a href="https://www.xiaohongshu.com" target="_blank">我的小红书</a></p>
+            <img src="assets/payment-qr.png" alt="支付二维码" class="qr-code" />
+        </div>
     </div>
 
     <script src="script.js"></script>
@@ -86,15 +108,16 @@
         // 获取音乐元素和按钮
         const audio = document.getElementById('background-music');
         const toggleButton = document.getElementById('toggle-music');
+        const musicIcon = document.getElementById('music-icon');
 
         // 监听按钮点击事件，切换音乐播放状态
         toggleButton.addEventListener('click', () => {
             if (audio.paused) {
                 audio.play();  // 播放音乐
-                toggleButton.textContent = '⏸';
+                musicIcon.src = 'assets/music_on.png';  // 更新图标
             } else {
                 audio.pause();  // 暂停音乐
-                toggleButton.textContent = '▶';
+                musicIcon.src = 'assets/music_off.png';  // 更新图标
             }
         });
     </script>
