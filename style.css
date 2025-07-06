@@ -354,6 +354,19 @@ button.color-settings img {
     font-size: 14px;
 }
 
+/* 设置github_link为白色且没有下划线 */
+#github_link {
+    color: white;        /* 设置文字颜色为白色 */
+    text-decoration: none; /* 去除下划线 */
+    cursor: url('assets/cursor_insert.cur'), auto;
+
+}
+
+#github_link:hover {
+    color: lightgray; /* 可以设置一个悬停效果，比如变为浅灰色 */
+    cursor: url('assets/cursor_insert.cur'), auto;
+}
+
 /* 弹出窗口样式 */
 .contact-modal {
     display: none;

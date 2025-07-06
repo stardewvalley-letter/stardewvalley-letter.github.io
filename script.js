@@ -381,7 +381,7 @@ function positionPreviewPanel() {
     if (!wrapper || !panel) return;
 
     // 如果滚动位置未超过 200px，就不定位，防止遮挡顶部内容
-    if (window.scrollY < 150) {
+    if (window.scrollY < 100) {
         panel.style.position = 'absolute';
         panel.style.top = '200px'; // 固定在距顶部 200px 的位置
         panel.style.left = '50%';
