@@ -9,12 +9,20 @@ body {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Courier New', monospace;
+    font-family: 'KNMaiyuan', sans-serif;
     background-image: url('assets/background.png'); /* 背景图路径 */
     background-size: cover; /* 确保背景图填满整个页面 */
     background-position: center center; /* 背景图居中显示 */
     background-repeat: no-repeat; /* 背景图不重复 */
     cursor: url('assets/cursor_default.cur'), auto; /* 设置自定义光标 */
+}
+
+.warning-text {
+    text-align: center;
+    color: red;
+    background-color: rgba(126, 188, 111, 0.7); /* 半透明黑色背景 */
+    padding: 10px;
+    border-radius: 8px;
 }
 
 label {
@@ -240,21 +248,23 @@ button.color-settings img {
 
 /* 小屏布局：上下排列 */
 @media (max-width: 768px) {
-    .editor-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
+    .preview-wrapper {
+        display: none;
+        position: static;
+        width: 100%;       /* 宽度自适应 */
+        max-height: none;
+        margin-top: 20px;  /* 给 preview-wrapper 添加间距，避免贴着 editor-container */
     }
 
-    .control-panel,
-    .preview-wrapper {
-        width: 100%;
-        margin-bottom: 20px;
+    .editor-container {
+        display: flex;
+        flex-direction: column;  /* 垂直排列 */
+        align-items: flex-start;
     }
 
     .preview-panel {
-        position: static;
-        width: 100%;
+        position: static;  /* 小屏下，取消悬浮 */
+        width: 100%;       /* 宽度自适应 */
         max-height: none;
     }
 }
@@ -323,7 +333,7 @@ button.color-settings img {
 
 /* 弹出窗口样式 */
 .contact-modal {
-    display: none; /* 默认隐藏 */
+    display: none;
     font-size: 16px;
     font-family: 'KNMaiyuan', sans-serif;
     line-height: 1.6;
@@ -408,8 +418,8 @@ button.color-settings img {
 /* 支付二维码 */
 .qr-code {
     margin-top: 10px;
-    width: 120px;
-    height: 120px;
+    width: 280px;
+    height: 160px;
     display: block;
     margin-left: auto;
     margin-right: auto;
