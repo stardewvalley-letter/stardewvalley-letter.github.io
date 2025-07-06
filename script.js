@@ -412,6 +412,18 @@ function updatePreviewColor(targetId, color) {
     updatePreview();
 }
 
+// 获取音乐元素
+const audio = document.getElementById('background-music');
+
+// 获取加载界面元素
+const loadingScreen = document.getElementById('loading-screen');
+
+// 监听音乐加载完成事件
+audio.addEventListener('canplaythrough', () => {
+    // 当音乐加载完成时，隐藏加载界面
+    loadingScreen.style.display = 'none';
+});
+
 // 获取所有设置按钮和颜色选择器
 const colorSettingsButtons = document.querySelectorAll('.color-settings');
 const colorPickers = {};

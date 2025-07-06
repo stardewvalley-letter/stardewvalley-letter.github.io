@@ -207,6 +207,10 @@ button.color-settings img {
 
 /* 控制面板与预览区域自适应 */
 @media (min-width: 1200px) {
+    .warning-text {
+        display: none;
+    }
+    
     .editor-container {
         display: flex;
         flex-direction: row;
@@ -288,6 +292,25 @@ button.color-settings img {
     }
 }
 
+/* 加载界面样式 */
+.loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.loading-screen img {
+    width: 316px; /* 可以根据需要调整GIF大小 */
+    height: 116px;
+}
+
 /* 悬浮的音乐控制器 */
 .music-controller {
     position: fixed;
@@ -334,7 +357,7 @@ button.color-settings img {
 /* 弹出窗口样式 */
 .contact-modal {
     display: none;
-    font-size: 16px;
+    font-size: 18px;
     font-family: 'KNMaiyuan', sans-serif;
     line-height: 1.6;
     position: fixed;
