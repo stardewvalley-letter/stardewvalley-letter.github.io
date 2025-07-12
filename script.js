@@ -201,138 +201,165 @@ function wrapText(context, text, maxWidth) {
     return lines;
 }
 
+let mailImageCache = {}; // 新增：信纸图像缓存
+let giftImageCache = {}; // 新增：礼物图像缓存
+
 // 更新预览
 function updatePreview() {
-
     const canvas = document.getElementById('preview-canvas');
     const ctx = canvas.getContext('2d');
 
     // 获取信纸
     const mailKey = document.getElementById('mail-img').value;
     const mailImg = mailImages[mailKey];
-    
     if (!mailImg || !mailImg.path) return;
-    
-    // 创建临时图像加载
-    const mailImage = new Image();
-    mailImage.crossOrigin = "Anonymous";
 
-    // 添加随机参数解决缓存污染
-    const timestamp = `?v=${Date.now()}`;
-    mailImage.src = mailImg.path + timestamp;
+    // 获取礼物
+    const giftKey = document.getElementById('gift-img').value;
+    const giftImg = giftImages[giftKey];
 
-    mailImage.onload = () => {
-        // 设置画布尺寸
-        canvas.width = mailImage.width;
-        canvas.height = mailImage.height;
-
-        // 绘制背景信纸
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(mailImage, 0, 0);
-
-        // 设置文本样式
-        const fontSize = parseInt(document.getElementById('font-size').value);
-        const marginTop = parseInt(document.getElementById('margin-top').value);
-        const marginBottom = parseInt(document.getElementById('margin-bottom').value);
-        const marginH = parseInt(document.getElementById('margin-h').value);
-
-        ctx.font = `${fontSize}px "Kingnammm Maiyuan 2"`;
-        ctx.fillStyle = '#3c281e'; // 星露谷信件文字颜色
-
-        // 绘制标题
-        const title = document.getElementById('title').value;
-        const titleColor = document.getElementById('title').getAttribute('data-color') || '#3c281e';
-        ctx.fillStyle = titleColor;
-        const titleLines = wrapText(ctx, title, canvas.width - 2 * marginH);
-        let y = marginTop;
-
-        titleLines.forEach(line => {
-            ctx.fillText(line, marginH, y);
-            y += fontSize + 4;
-        });
-
-        // 绘制正文
-        const body = document.getElementById('body').value;
-        const bodyColor = document.getElementById('body').getAttribute('data-color') || '#3c281e';
-        ctx.fillStyle = bodyColor;
-        const bodyLines = wrapText(ctx, body, canvas.width - 2 * marginH);
-
-        y += 10;
-        bodyLines.forEach(line => {
-            ctx.fillText(line, marginH, y);
-            y += fontSize + 4;
-        });
-
-        // 绘制署名
-        const signature = document.getElementById('signature').value;
-        const signatureColor = document.getElementById('signature').getAttribute('data-color') || '#3c281e';
-        ctx.fillStyle = signatureColor;
-        if (signature) {
-            ctx.font = `${fontSize}px "Kingnammm Maiyuan 2"`;
-            const signatureLines = wrapText(ctx, signature, canvas.width - 2 * marginH);
-
-            // 从底部向上绘制
-            const signY = canvas.height - marginBottom - 80;
-            for (let i = 0; i < signatureLines.length; i++) {
-                const line = signatureLines[i];
-                const lineWidth = ctx.measureText(line).width;
-                const signatureX = canvas.width - marginH - lineWidth;
-                ctx.fillText(line, signatureX, signY + i * (fontSize + 4));
-            }
-        }
-
-        // 绘制礼物
-        const giftKey = document.getElementById('gift-img').value;
-        const giftImg = giftImages[giftKey];
-
-        if (giftKey !== 'none' && giftImg && giftImg.path) {
-            const giftImage = new Image();
-            giftImage.crossOrigin = "Anonymous";
-            giftImage.src = giftImg.path + timestamp; // 添加随机参数解决缓存污染
-            giftImage.onload = () => {
-                const giftText = document.getElementById('gift-text').value;
-                const giftTextColor = document.getElementById('gift-text').getAttribute('data-color') || '#3c281e';
-                ctx.fillStyle = giftTextColor;
-                const giftFontSize = parseInt(document.getElementById('gift-font-size').value);
-                const giftIconSize = parseInt(document.getElementById('gift-icon-size').value);
-                const textPosition = document.getElementById('gift-text-position').value;
-
-                // 调整礼物图标大小
-                const scaledWidth = giftIconSize;
-                const scaledHeight = (giftImage.height / giftImage.width) * giftIconSize;
-
-                // 设置礼物文字样式
-                ctx.font = `${giftFontSize}px "Kingnammm Maiyuan 2"`;
-                const textWidth = giftText ? ctx.measureText(giftText).width : 0;
-                const gap = 10;
-
-                // 计算总宽度
-                const totalWidth = scaledWidth + (textWidth > 0 ? textWidth + gap : 0);
-
-                // 居中位置
-                const x = (canvas.width - totalWidth) / 2;
-                const yGift = canvas.height - marginBottom - 30;
-
-                // 根据位置绘制
-                if (textPosition === 'before' && giftText) {
-                    ctx.fillText(giftText, x, yGift + scaledHeight/2 + giftFontSize/3);
-                    ctx.drawImage(giftImage, x + textWidth + gap, yGift, scaledWidth, scaledHeight);
-                } else {
-                    ctx.drawImage(giftImage, x, yGift, scaledWidth, scaledHeight);
-                    if (giftText) {
-                        ctx.fillText(giftText, x + scaledWidth + gap, yGift + scaledHeight/2 + giftFontSize/3);
-                    }
-                }
-            };
-
-            giftImage.onerror = () => console.error("礼物图加载失败");
-            giftImage.src = giftImg.path;
-        }
-    };
-    
-    mailImage.onerror = () => {
-        console.error("信纸加载失败，路径:", mailImg.path);
+    // 从缓存获取或加载信纸图片
+    let mailImage = mailImageCache[mailKey];
+    if (!mailImage) {
+        mailImage = new Image();
+        mailImage.crossOrigin = "Anonymous";
         mailImage.src = mailImg.path;
+        mailImageCache[mailKey] = mailImage;
+    }
+
+    // 信纸加载处理
+    if (mailImage.complete) {
+        drawPreview(canvas, ctx, mailImage, giftKey, giftImg);
+    } else {
+        mailImage.onload = () => {
+            drawPreview(canvas, ctx, mailImage, giftKey, giftImg);
+        };
+        mailImage.onerror = () => {
+            console.error("信纸加载失败，路径:", mailImg.path);
+        };
+    }
+}
+
+// 绘制预览内容
+function drawPreview(canvas, ctx, mailImage, giftKey, giftImg) {
+    // 设置画布尺寸
+    canvas.width = mailImage.width;
+    canvas.height = mailImage.height;
+
+    // 绘制背景信纸
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(mailImage, 0, 0);
+
+    // 设置文本样式
+    const fontSize = parseInt(document.getElementById('font-size').value);
+    const marginTop = parseInt(document.getElementById('margin-top').value);
+    const marginBottom = parseInt(document.getElementById('margin-bottom').value);
+    const marginH = parseInt(document.getElementById('margin-h').value);
+
+    ctx.font = `${fontSize}px "Kingnammm Maiyuan 2"`;
+    ctx.fillStyle = '#3c281e';
+
+    // 绘制标题
+    const title = document.getElementById('title').value;
+    const titleColor = document.getElementById('title').getAttribute('data-color') || '#3c281e';
+    ctx.fillStyle = titleColor;
+    const titleLines = wrapText(ctx, title, canvas.width - 2 * marginH);
+    let y = marginTop;
+
+    titleLines.forEach(line => {
+        ctx.fillText(line, marginH, y);
+        y += fontSize + 4;
+    });
+
+    // 绘制正文
+    const body = document.getElementById('body').value;
+    const bodyColor = document.getElementById('body').getAttribute('data-color') || '#3c281e';
+    ctx.fillStyle = bodyColor;
+    const bodyLines = wrapText(ctx, body, canvas.width - 2 * marginH);
+
+    y += 10;
+    bodyLines.forEach(line => {
+        ctx.fillText(line, marginH, y);
+        y += fontSize + 4;
+    });
+
+    // 绘制署名
+    const signature = document.getElementById('signature').value;
+    const signatureColor = document.getElementById('signature').getAttribute('data-color') || '#3c281e';
+    ctx.fillStyle = signatureColor;
+    if (signature) {
+        ctx.font = `${fontSize}px "Kingnammm Maiyuan 2"`;
+        const signatureLines = wrapText(ctx, signature, canvas.width - 2 * marginH);
+
+        // 从底部向上绘制
+        const signY = canvas.height - marginBottom - 80;
+        for (let i = 0; i < signatureLines.length; i++) {
+            const line = signatureLines[i];
+            const lineWidth = ctx.measureText(line).width;
+            const signatureX = canvas.width - marginH - lineWidth;
+            ctx.fillText(line, signatureX, signY + i * (fontSize + 4));
+        }
+    }
+
+    // 绘制礼物（如果存在）
+    if (giftKey !== 'none' && giftImg && giftImg.path) {
+        // 从缓存获取或加载礼物图片
+        let giftImage = giftImageCache[giftKey];
+        if (!giftImage) {
+            giftImage = new Image();
+            giftImage.crossOrigin = "Anonymous";
+            giftImage.src = giftImg.path;
+            giftImageCache[giftKey] = giftImage;
+        }
+
+        // 礼物加载处理
+        if (giftImage.complete) {
+            drawGift(ctx, giftImage, canvas, marginBottom);
+        } else {
+            giftImage.onload = () => {
+                drawGift(ctx, giftImage, canvas, marginBottom);
+            };
+            giftImage.onerror = () => {
+                console.error("礼物图加载失败:", giftImg.path);
+            };
+        }
+    }
+}
+
+// 绘制礼物
+function drawGift(ctx, giftImage, canvas, marginBottom) {
+    const giftText = document.getElementById('gift-text').value;
+    const giftTextColor = document.getElementById('gift-text').getAttribute('data-color') || '#3c281e';
+    ctx.fillStyle = giftTextColor;
+    const giftFontSize = parseInt(document.getElementById('gift-font-size').value);
+    const giftIconSize = parseInt(document.getElementById('gift-icon-size').value);
+    const textPosition = document.getElementById('gift-text-position').value;
+
+    // 调整礼物图标大小
+    const scaledWidth = giftIconSize;
+    const scaledHeight = (giftImage.height / giftImage.width) * giftIconSize;
+
+    // 设置礼物文字样式
+    ctx.font = `${giftFontSize}px "Kingnammm Maiyuan 2"`;
+    const textWidth = giftText ? ctx.measureText(giftText).width : 0;
+    const gap = 10;
+
+    // 计算总宽度
+    const totalWidth = scaledWidth + (textWidth > 0 ? textWidth + gap : 0);
+
+    // 居中位置
+    const x = (canvas.width - totalWidth) / 2;
+    const yGift = canvas.height - marginBottom - 30;
+
+    // 根据位置绘制
+    if (textPosition === 'before' && giftText) {
+        ctx.fillText(giftText, x, yGift + scaledHeight/2 + giftFontSize/3);
+        ctx.drawImage(giftImage, x + textWidth + gap, yGift, scaledWidth, scaledHeight);
+    } else {
+        ctx.drawImage(giftImage, x, yGift, scaledWidth, scaledHeight);
+        if (giftText) {
+            ctx.fillText(giftText, x + scaledWidth + gap, yGift + scaledHeight/2 + giftFontSize/3);
+        }
     }
 }
 
