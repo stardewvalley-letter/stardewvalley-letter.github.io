@@ -13,7 +13,7 @@
         <p class="warning-text">注意：小屏界面不会显示信件预览，老乡们尽量使用Pad或者电脑哦~</p>
         <!-- 背景音乐 -->
         <audio id="background-music" loop autoplay>
-            <source src="assets/StardewValleyOverture.mp3" type="audio/mp3">
+            <source src="assets/StardewValleyOverture.mp3?timestamp=<?= time() ?>" type="audio/mp3">
             您的浏览器不支持音频标签。
         </audio>
 
@@ -181,10 +181,13 @@
         <p>再次感谢你的到来和支持！愿你的信箱总是装满温情，农场总是阳光明媚！🌻</p>
         
         <p>- 来自你的星露谷邮差朋友，Joyin</p>
+
+        <hr>
+
+        <p>📌网站总访问次数统计：<span id="busuanzi_site_pv"></span> 人次</p>
         </div>
     </div>
-
     <script src="script.js"></script>
-
+    <script defer src="https://busuanzi.9420.ltd/js"></script>
 </body>
 </html>
