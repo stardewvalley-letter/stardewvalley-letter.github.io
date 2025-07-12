@@ -447,13 +447,13 @@ toggleButton.addEventListener('click', () => {
 // 音乐加载计时器
 let musicLoaded = false;
 let musicTimeout = setTimeout(() => {
-    // 超过5秒如果音频没加载完成，则停止播放
+    // 超过8秒如果音频没加载完成，则停止播放
     audio.pause();
     audio.src = '';
     musicIcon.src = 'assets/music_off.png';  // 设置音乐关闭图标
     loadingScreen.style.display = 'none';
     musicControl.style.display = 'none';
-}, 5000);  // 5秒
+}, 8000);  // 8秒
 
 // 监听音频加载是否完成
 audio.addEventListener('canplaythrough', () => {
