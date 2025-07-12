@@ -12,10 +12,10 @@
         <h1>星露谷信件生成器</h1>
         <p class="warning-text">注意：小屏界面不会显示信件预览，老乡们尽量使用Pad或者电脑哦~</p>
         <!-- 背景音乐 -->
-        <!-- <audio id="background-music" loop autoplay>
+        <audio id="background-music" loop autoplay>
             <source src="assets/StardewValleyOverture.mp3" type="audio/mp3">
             您的浏览器不支持音频标签。
-        </audio> -->
+        </audio>
 
         <div class="editor-container">
             <!-- 左侧控制面板 -->
@@ -145,12 +145,12 @@
     </div>
 
     <!-- 加载界面 -->
-    <!-- <div id="loading-screen" class="loading-screen">
+    <div id="loading-screen" class="loading-screen">
         <img src="assets/loading.gif" alt="加载中..." />
-    </div> -->
+    </div>
 
     <!-- 音乐控制器 -->
-    <div class="music-controller">
+    <div id="music-controller" class="music-controller">
         <button id="toggle-music">
             <img id="music-icon" src="assets/music_on.png" alt="音乐开关" />
         </button>
@@ -185,24 +185,6 @@
     </div>
 
     <script src="script.js"></script>
-
-    <script>
-        // 获取音乐元素和按钮
-        const audio = document.getElementById('background-music');
-        const toggleButton = document.getElementById('toggle-music');
-        const musicIcon = document.getElementById('music-icon');
-
-        // 监听按钮点击事件，切换音乐播放状态
-        toggleButton.addEventListener('click', () => {
-            if (audio.paused) {
-                audio.play();  // 播放音乐
-                musicIcon.src = 'assets/music_on.png';  // 更新图标
-            } else {
-                audio.pause();  // 暂停音乐
-                musicIcon.src = 'assets/music_off.png';  // 更新图标
-            }
-        });
-    </script>
 
 </body>
 </html>

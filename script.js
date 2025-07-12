@@ -416,9 +416,53 @@ function updatePreviewColor(targetId, color) {
 
 // 获取音乐元素
 const audio = document.getElementById('background-music');
+const toggleButton = document.getElementById('toggle-music');
+const musicIcon = document.getElementById('music-icon');
+const musicContorl = document.getElementById('music-controller');
 
 // 获取加载界面元素
 const loadingScreen = document.getElementById('loading-screen');
+
+// 监听按钮点击事件，切换音乐播放状态
+toggleButton.addEventListener('click', () => {
+    if (audio.paused) {
+        audio.play();  // 播放音乐
+        musicIcon.src = 'assets/music_on.png';  // 更新图标
+    } else {
+        audio.pause();  // 暂停音乐
+        musicIcon.src = 'assets/music_off.png';  // 更新图标
+    }
+});
+
+// 音乐加载计时器
+let musicLoaded = false;
+let musicTimeout = setTimeout(() => {
+    // 超过5秒如果音频没加载完成，则停止播放
+    audio.pause();
+    audio.src = '';
+    musicIcon.src = 'assets/music_off.png';  // 设置音乐关闭图标
+    loadingScreen.style.display = 'none';
+    musicContorl.style.display = 'none';
+}, 5000);  // 5秒
+
+// 监听音频加载是否完成
+audio.addEventListener('canplaythrough', () => {
+    musicLoaded = true;
+    clearTimeout(musicTimeout);  // 音乐成功加载，清除计时器
+    audio.play();  // 播放音乐
+    musicIcon.src = 'assets/music_on.png';  // 设置音乐播放图标
+    loadingScreen.style.display = 'none';  // 隐藏加载界面
+    musicControl.style.display = 'block';  // 显示控制按钮
+});
+
+// 监听音频加载错误（例如网络问题）
+audio.addEventListener('error', () => {
+    clearTimeout(musicTimeout);  // 清除超时计时器
+    musicIcon.src = 'assets/music_off.png';  // 设置图标为关闭状态
+    loadingScreen.style.display = 'none';  // 隐藏加载界面
+    musicControl.style.display = 'none';  // 隐藏控制面板
+});
+
 
 // 监听音乐加载完成事件
 audio.addEventListener('canplaythrough', () => {
@@ -519,7 +563,7 @@ window.addEventListener('DOMContentLoaded', () => {
     const headerHeight = document.querySelector('h1').offsetHeight;  // 获取 h1 的高度
 
     // 调用一次，设置初始状态
-    adjustPreviewPanelPosition(previewPanel, headerHeight);
+    // adjustPreviewPanelPosition(previewPanel, headerHeight);
 
     // 监听滚动事件
     window.addEventListener('scroll', adjustPreviewPanelPosition);
