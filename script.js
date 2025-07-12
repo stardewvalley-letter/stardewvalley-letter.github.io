@@ -1,13 +1,10 @@
 // 全局变量
 let mailImages = {};
 let giftImages = {};
-let fontLoaded = false;
 
 // 初始化函数
 window.addEventListener('DOMContentLoaded', () => {
-    // 加载字体
-    loadFont();
-    
+
     // 加载默认资源 - 使用您提供的目录结构
     loadDefaultImages();
     
@@ -17,19 +14,6 @@ window.addEventListener('DOMContentLoaded', () => {
     // 初始渲染
     updatePreview();
 });
-
-// 加载中文字体
-function loadFont() {
-    const font = new FontFace('KNMaiyuan', 'url(assets/font/KNMaiyuan-Regular.ttf)');
-    font.load().then((loadedFont) => {
-        document.fonts.add(loadedFont);
-        fontLoaded = true;
-        updatePreview();
-    }).catch(error => {
-        console.error('字体加载失败:', error);
-        fontLoaded = false;
-    });
-}
 
 // 加载默认信纸和礼物 - 使用您提供的目录结构
 function loadDefaultImages() {
@@ -219,7 +203,6 @@ function wrapText(context, text, maxWidth) {
 
 // 更新预览
 function updatePreview() {
-    if (!fontLoaded) return;
 
     const canvas = document.getElementById('preview-canvas');
     const ctx = canvas.getContext('2d');
@@ -253,7 +236,7 @@ function updatePreview() {
         const marginBottom = parseInt(document.getElementById('margin-bottom').value);
         const marginH = parseInt(document.getElementById('margin-h').value);
 
-        ctx.font = `${fontSize}px KNMaiyuan`;
+        ctx.font = `${fontSize}px "Kingnammm Maiyuan 2"`;
         ctx.fillStyle = '#3c281e'; // 星露谷信件文字颜色
 
         // 绘制标题
@@ -285,7 +268,7 @@ function updatePreview() {
         const signatureColor = document.getElementById('signature').getAttribute('data-color') || '#3c281e';
         ctx.fillStyle = signatureColor;
         if (signature) {
-            ctx.font = `${fontSize}px KNMaiyuan`;
+            ctx.font = `${fontSize}px "Kingnammm Maiyuan 2"`;
             const signatureLines = wrapText(ctx, signature, canvas.width - 2 * marginH);
 
             // 从底部向上绘制
@@ -319,7 +302,7 @@ function updatePreview() {
                 const scaledHeight = (giftImage.height / giftImage.width) * giftIconSize;
 
                 // 设置礼物文字样式
-                ctx.font = `${giftFontSize}px KNMaiyuan`;
+                ctx.font = `${giftFontSize}px "Kingnammm Maiyuan 2"`;
                 const textWidth = giftText ? ctx.measureText(giftText).width : 0;
                 const gap = 10;
 
@@ -418,7 +401,7 @@ function updatePreviewColor(targetId, color) {
 const audio = document.getElementById('background-music');
 const toggleButton = document.getElementById('toggle-music');
 const musicIcon = document.getElementById('music-icon');
-const musicContorl = document.getElementById('music-controller');
+const musicControl = document.getElementById('music-controller');
 
 // 获取加载界面元素
 const loadingScreen = document.getElementById('loading-screen');
@@ -442,7 +425,7 @@ let musicTimeout = setTimeout(() => {
     audio.src = '';
     musicIcon.src = 'assets/music_off.png';  // 设置音乐关闭图标
     loadingScreen.style.display = 'none';
-    musicContorl.style.display = 'none';
+    musicControl.style.display = 'none';
 }, 5000);  // 5秒
 
 // 监听音频加载是否完成
@@ -510,18 +493,34 @@ colorSettingsButtons.forEach(button => {
     });
 });
 
-function adjustPreviewPanelPosition(previewPanel, headerHeight) {
-    const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+function adjustPreviewPanelPosition() {
+    const previewPanel = document.querySelector('.preview-panel');
     
-    // 如果页面滚动超过 h1 的高度，修改 preview-panel 的 top 值，避免遮挡
-    if (scrollTop < headerHeight) {
-        previewPanel.style.position = 'absolute';
-        previewPanel.style.top = `${scrollTop + 40}px`;  // 保持与页面顶部有间隔
-        previewPanel.style.transform = 'none';  // 取消 translateY 调整
+    // Check if previewPanel exists
+    if (!previewPanel) {
+        console.error("Preview panel not found");
+        return;  // Exit if the element doesn't exist
+    }
+
+    const headerHeight = document.querySelector('h1').offsetHeight; // Assuming h1 exists
+    const containerRect = document.querySelector('.editor-container').getBoundingClientRect();
+    const previewPanelWidth = previewPanel.offsetWidth;
+    const windowWidth = window.innerWidth;
+
+    // Determine the panel's position based on window width and scroll position
+    if (windowWidth >= 768 && windowWidth <= 1024) {
+        previewPanel.style.position = 'static';
+        previewPanel.style.transform = 'none';
+        previewPanel.style.marginTop = '20px';
+    } else if (windowWidth - containerRect.left < previewPanelWidth + 320) {
+        previewPanel.style.position = 'static';
+        previewPanel.style.transform = 'none';
+        previewPanel.style.marginTop = '20px';
     } else {
         previewPanel.style.position = 'fixed';
         previewPanel.style.top = '50%';
-        previewPanel.style.transform = 'translateY(-50%)';  // 使其垂直居中
+        previewPanel.style.transform = 'translateY(-50%)';
+        previewPanel.style.marginTop = '0';
     }
 }
 

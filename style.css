@@ -1,3 +1,5 @@
+@import url("https://fontsapi.zeoseven.com/116/main/result.css");
+
 :root {
     --stardew-green: #7ebc6f;
     --stardew-brown: #8b5a2b;
@@ -9,7 +11,7 @@ body {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'KNMaiyuan', sans-serif;
+    font-family: 'Kingnammm Maiyuan 2', sans-serif;
     background-image: url('assets/background.png'); /* 背景图路径 */
     background-size: cover; /* 确保背景图填满整个页面 */
     background-position: center center; /* 背景图居中显示 */
@@ -30,7 +32,7 @@ label {
     align-items: center;
     margin: 10px 0;
     font-size: 14px;
-    font-family: 'KNMaiyuan', sans-serif;
+    font-family: 'Kingnammm Maiyuan 2', sans-serif;
     cursor: url('assets/cursor_default.cur'), auto; /* 设置自定义光标 */
 }
 
@@ -53,18 +55,13 @@ button.color-settings {
     box-shadow: 0 10px 20px rgba(0,0,0,0.2);
 }
 
-@font-face {
-    font-family: 'KNMaiyuan';  /* 自定义字体名称 */
-    src: url('assets/font/KNMaiyuan-Regular.ttf') format('truetype');  /* 字体文件的路径 */
-}
-
 h1, h2 {
     color: var(--stardew-dark);
     text-align: center;
     font-weight: normal;
     border-bottom: 2px dashed var(--stardew-brown);
     padding-bottom: 10px;
-    font-family: 'KNMaiyuan', sans-serif;
+    font-family: 'Kingnammm Maiyuan 2', sans-serif;
 }
 
 .control-group h2 {
@@ -138,7 +135,7 @@ button {
     width: 100%;
     margin: 2px 0;
     transition: background-color 0.3s;
-    font-family: 'KNMaiyuan', sans-serif;
+    font-family: 'Kingnammm Maiyuan 2', sans-serif;
     cursor: url('assets/cursor_insert.cur'), auto; /* 设置插入光标 */
 }
 
@@ -385,7 +382,7 @@ button.color-settings img {
 .contact-modal {
     display: none;
     font-size: 18px;
-    font-family: 'KNMaiyuan', sans-serif;
+    font-family: 'Kingnammm Maiyuan 2', sans-serif;
     line-height: 1.6;
     position: fixed;
     top: 50%;
