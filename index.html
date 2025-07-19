@@ -43,6 +43,9 @@
                     <div class="input-container">
                         <label>署名：</label>
                         <input type="text" id="signature" placeholder="您的名字">
+                        <label style="margin-left:8px; margin-right:8px; font-size:13px;">
+                            <input type="checkbox" id="signature-align-left" style="vertical-align:middle; margin-right:4px;">左对齐
+                        </label>
                         <button class="color-settings" data-target="signature">
                             <img src="assets/setting.png" alt="设置颜色" />
                         </button>
@@ -56,6 +59,9 @@
                     <div class="input-container">
                         <label>礼物说明：</label>
                         <input type="text" id="gift-text" placeholder="礼物描述">
+                        <label style="margin-left:8px; margin-right:8px; font-size:13px;">
+                            <input type="checkbox" id="gift-text-before" style="vertical-align:middle; margin-right:4px;" checked>图标前
+                        </label>
                         <button class="color-settings" data-target="gift-text">
                             <img src="assets/setting.png" alt="设置颜色" />
                         </button>
@@ -63,10 +69,9 @@
                 
                     <div class="input-container">
                         <label>礼物图标：</label>
-                        <select id="gift-img">
-                            <option value="none">无</option>
-                            <!-- 选项由JS动态生成 -->
-                        </select>
+                        <div id="gift-img-list" class="gift-img-list">
+                            <!-- 图标由JS动态生成 -->
+                        </div>
                     </div>
 
                     <div class="input-container">
@@ -77,13 +82,6 @@
                     <div class="input-container">
                         <label>图标大小：</label>
                         <input type="number" id="gift-icon-size" min="24" max="128" value="64">
-                    </div>
-                    <div class="input-container">
-                        <label>说明位置：</label>
-                        <select id="gift-text-position">
-                            <option value="before">图标前</option>
-                            <option value="after">图标后</option>
-                        </select>
                     </div>
                 </div>
                 
