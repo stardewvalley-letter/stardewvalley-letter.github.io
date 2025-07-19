@@ -414,21 +414,50 @@ button.color-settings img {
 }
 
 /* 弹出颜色选择器的样式 */
+/* 星露谷风格颜色选择器 */
 .color-picker {
     display: none;
     position: absolute;
-    background-color: white;
-    border: 1px solid #ccc;
-    padding: 5px;
-    border-radius: 5px;
+    background: linear-gradient(135deg, #f5e7c6 80%, #7ebc6f 100%);
+    border: 3px solid var(--stardew-brown);
+    box-shadow: 0 4px 12px rgba(126,188,111,0.18), 0 1px 0 #fff inset;
+    padding: 12px 16px 10px 16px;
+    border-radius: 12px;
     z-index: 999;
+    min-width: 100px;
+    min-height: 48px;
+    box-sizing: border-box;
+    width: auto !important;
+    height: auto !important;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: picker-pop 0.18s cubic-bezier(.42,0,.58,1);
 }
 
-.color-picker input {
-    width: 40px;
-    height: 20px;
-    border: none;
+.color-picker input[type="color"] {
+    width: 64px !important;
+    height: 36px !important;
+    min-width: 64px !important;
+    min-height: 36px !important;
+    max-width: 64px !important;
+    max-height: 36px !important;
+    border: 2px solid var(--stardew-green);
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(139,90,43,0.12);
+    background: #f8f4e9;
     cursor: pointer;
+    transition: box-shadow 0.2s;
+    flex: none !important;
+}
+.color-picker input[type="color"]:hover {
+    box-shadow: 0 4px 12px rgba(139,90,43,0.18);
+    border-color: var(--stardew-brown);
+}
+
+@keyframes picker-pop {
+    0% { transform: scale(0.7); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
 }
 
 /* 弹出窗口内容 */
