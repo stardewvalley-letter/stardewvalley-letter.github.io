@@ -203,6 +203,111 @@ button.color-settings img {
     height: 100%;
 }
 
+/* 星露谷风格勾选框 */
+#signature-align-left {
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--stardew-brown);
+    border-radius: 5px;
+    background: linear-gradient(135deg, #f5e7c6 80%, #7ebc6f 100%);
+    box-shadow: 0 2px 6px rgba(139,90,43,0.10);
+    outline: none;
+    cursor: pointer;
+    position: relative;
+    vertical-align: middle;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+#signature-align-left:hover {
+    border-color: var(--stardew-green);
+    box-shadow: 0 4px 12px rgba(126,188,111,0.18);
+}
+#signature-align-left:checked {
+    border-color: var(--stardew-green);
+    background: linear-gradient(135deg, #7ebc6f 80%, #f5e7c6 100%);
+}
+#signature-align-left:checked::after{
+    content: '';
+    display: block;
+    position: absolute;
+    left: 4px;
+    top: 1px;
+    width: 7px;
+    height: 12px;
+    border: solid var(--stardew-brown);
+    border-width: 0 3px 3px 0;
+    transform: rotate(45deg);
+    background: none;
+}
+
+/* 星露谷风格说明位置勾选框 */
+#gift-text-before {
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--stardew-brown);
+    border-radius: 5px;
+    background: linear-gradient(135deg, #f5e7c6 80%, #7ebc6f 100%);
+    box-shadow: 0 2px 6px rgba(139,90,43,0.10);
+    outline: none;
+    cursor: pointer;
+    position: relative;
+    vertical-align: middle;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+#gift-text-before:hover {
+    border-color: var(--stardew-green);
+    box-shadow: 0 4px 12px rgba(126,188,111,0.18);
+}
+#gift-text-before:checked {
+    border-color: var(--stardew-green);
+    background: linear-gradient(135deg, #7ebc6f 80%, #f5e7c6 100%);
+}
+#gift-text-before:checked::after{
+    content: '';
+    display: block;
+    position: absolute;
+    left: 4px;
+    top: 1px;
+    width: 7px;
+    height: 12px;
+    border: solid var(--stardew-brown);
+    border-width: 0 3px 3px 0;
+    transform: rotate(45deg);
+    background: none;
+}
+
+/* 星露谷风格礼物图标选择器 */
+.gift-img-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 8px 0;
+}
+.gift-img-item {
+    width: 44px;
+    height: 44px;
+    border: 2px solid var(--stardew-brown);
+    border-radius: 8px;
+    background: linear-gradient(135deg, #f5e7c6 80%, #7ebc6f 100%);
+    box-shadow: 0 2px 6px rgba(139,90,43,0.10);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    position: relative;
+}
+.gift-img-item.selected {
+    border-color: var(--stardew-green);
+    box-shadow: 0 4px 12px rgba(126,188,111,0.18);
+}
+.gift-img-item:hover {
+    border-color: var(--stardew-green);
+    box-shadow: 0 4px 12px rgba(126,188,111,0.18);
+}
+
+
 /* 控制面板与预览区域自适应 */
 @media (min-width: 1200px) {
     .warning-text {

@@ -1,6 +1,7 @@
 // 全局变量
 let mailImages = {};
 let giftImages = {};
+window.giftSelectedKeys = [];
 
 // 初始化函数
 window.addEventListener('DOMContentLoaded', () => {
@@ -13,6 +14,14 @@ window.addEventListener('DOMContentLoaded', () => {
     
     // 初始渲染
     updatePreview();
+
+    // 监听署名左对齐勾选框，切换预览区署名对齐方式
+    const alignCheckbox = document.getElementById('signature-align-left');
+    if (alignCheckbox) {
+        alignCheckbox.addEventListener('change', function() {
+            updatePreview();
+        });
+    }
 });
 
 // 加载默认信纸和礼物 - 使用您提供的目录结构
@@ -60,32 +69,97 @@ function loadDefaultImages() {
 // 填充下拉菜单
 function populateImageSelectors() {
     const mailSelect = document.getElementById('mail-img');
-    const giftSelect = document.getElementById('gift-img');
-    
+    let giftImgList = document.getElementById('gift-img-list');
     // 清空选项
     mailSelect.innerHTML = '';
-    giftSelect.innerHTML = '<option value="none">无</option>';
-    
+    if (giftImgList) {
+        giftImgList.innerHTML = '';
+        // 移除旧的点击事件，防止重复绑定
+        giftImgList.replaceWith(giftImgList.cloneNode(false));
+        // 重新获取新节点
+        const newGiftImgList = document.getElementById('gift-img-list');
+        if (newGiftImgList) giftImgList = newGiftImgList;
+    }
+
     // 添加信纸选项
     for (const [key, img] of Object.entries(mailImages)) {
         const option = document.createElement('option');
         option.value = key;
         option.textContent = img.name;
         mailSelect.appendChild(option);
-        
         // 设置默认选择为regular_horizontal
         if (key === 'regular_horizontal') {
             option.selected = true;
         }
     }
-    
-    // 添加礼物选项
-    for (const [key, img] of Object.entries(giftImages)) {
-        if (key === 'none') continue;
-        const option = document.createElement('option');
-        option.value = key;
-        option.textContent = img.name;
-        giftSelect.appendChild(option);
+
+    // 添加礼物图标列表
+    if (giftImgList) {
+        // “无”选项
+        const noneDiv = document.createElement('div');
+        noneDiv.className = 'gift-img-item';
+        noneDiv.setAttribute('data-key', 'none');
+        noneDiv.title = '无';
+        noneDiv.innerHTML = '<span style="font-size:22px;color:#bbb;">无</span>';
+        giftImgList.appendChild(noneDiv);
+
+        for (const [key, img] of Object.entries(giftImages)) {
+            if (key === 'none') continue;
+            const div = document.createElement('div');
+            div.className = 'gift-img-item';
+            div.setAttribute('data-key', key);
+            div.title = img.name;
+            // 判断是否有图片路径
+            // 统一结构，遮罩始终在gift-img-item最顶层
+            div.style.position = 'relative';
+            let inner = '';
+            if (img.path) {
+                inner += `<img src="${img.path}" alt="${img.name}" style="width:40px;height:40px;object-fit:contain;">`;
+            } else {
+                inner += `<span style="width:45px;height:45px;display:flex;align-items:center;justify-content:center;color:#bbb;font-size:18px;background:#f8f2e0;border-radius:8px;border:1px solid #c2a36b;">${img.name || '无图'}</span>`;
+            }
+            // 遮罩始终在最顶层
+            inner += `<img class="gift-img-barrier" src="assets/selected.png" style="display:none;position:absolute;left:0;top:0;width:45px;height:45px;pointer-events:none;z-index:10;" alt="selected">`;
+            div.innerHTML = inner;
+            giftImgList.appendChild(div);
+        }
+
+        // giftSelectedKeys始终为全局变量，不被重置
+        // 点击切换为多选
+        giftImgList.addEventListener('click', function(e) {
+            let target = e.target;
+            while (target && !target.classList.contains('gift-img-item')) {
+                target = target.parentElement;
+            }
+            if (target) {
+                const key = target.getAttribute('data-key');
+                if (key === 'none') {
+                    // 选择“无”时清空所有选中
+                    window.giftSelectedKeys = [];
+                    Array.from(giftImgList.children).forEach(item => {
+                        item.classList.remove('selected');
+                        const barrier = item.querySelector('.gift-img-barrier');
+                        if (barrier) barrier.style.display = 'none';
+                    });
+                    updatePreview();
+                    return;
+                }
+                // 只有当前key未被选中时才加入
+                if (!window.giftSelectedKeys.includes(key)) {
+                    window.giftSelectedKeys.push(key);
+                    target.classList.add('selected');
+                    const barrier = target.querySelector('.gift-img-barrier');
+                    if (barrier) barrier.style.display = 'block';
+                } else {
+                    // 已选中则取消
+                    window.giftSelectedKeys = window.giftSelectedKeys.filter(k => k !== key);
+                    target.classList.remove('selected');
+                    const barrier = target.querySelector('.gift-img-barrier');
+                    if (barrier) barrier.style.display = 'none';
+                }
+                updatePreview();
+            }
+        });
     }
 }
 
@@ -100,8 +174,16 @@ function setupEventListeners() {
     ];
     
     inputs.forEach(id => {
-        document.getElementById(id).addEventListener('input', updatePreview);
+        const el = document.getElementById(id);
+        // 跳过已被图标选择替代的gift-img和gift-text-position
+        if (id === 'gift-img' || id === 'gift-text-position') return;
+        if (el) el.addEventListener('input', updatePreview);
     });
+    // 说明位置勾选框联动
+    const giftTextBefore = document.getElementById('gift-text-before');
+    if (giftTextBefore) {
+        giftTextBefore.addEventListener('change', updatePreview);
+    }
     
     // 上传按钮
     document.getElementById('upload-mail').addEventListener('click', () => {
@@ -131,9 +213,15 @@ function uploadImage(type) {
             const imageKey = `custom_${Date.now()}`;
             const imageName = file.name.split('.')[0];
 
-            // 保存当前信纸和礼物的选择
-            const currentMailKey = document.getElementById('mail-img').value;
-            const currentGiftKey = document.getElementById('gift-img').value;
+            // 保存当前信纸选择
+            const mailSelectElem = document.getElementById('mail-img');
+            const currentMailKey = mailSelectElem ? mailSelectElem.value : null;
+
+            let currentGiftKey = null;
+            const selectedGiftItem = document.querySelector('.gift-img-item.selected');
+            if (selectedGiftItem) {
+                currentGiftKey = selectedGiftItem.dataset.key;
+            }
 
             // 添加图像数据
             if (type === 'mail') {
@@ -148,20 +236,55 @@ function uploadImage(type) {
                 };
             }
 
-            // 重新填充下拉菜单
+            // 重新填充信纸和礼物图标选择器
             populateImageSelectors();
 
-            // 恢复信纸和礼物的选择
+            // 恢复信纸选择
             const mailSelect = document.getElementById('mail-img');
-            mailSelect.value = currentMailKey;  // 恢复信纸选择
-            const giftSelect = document.getElementById('gift-img');
-            giftSelect.value = currentGiftKey;  // 恢复礼物选择
+            if (mailSelect && currentMailKey) mailSelect.value = currentMailKey;
+            // 恢复礼物图标多选状态
+            if (window.giftSelectedKeys && window.giftSelectedKeys.length > 0) {
+                const giftImgList = document.getElementById('gift-img-list');
+                if (giftImgList) {
+                    const items = giftImgList.querySelectorAll('.gift-img-item');
+                    items.forEach(item => {
+                        const key = item.dataset.key;
+                        if (window.giftSelectedKeys.includes(key)) {
+                            item.classList.add('selected');
+                            const barrier = item.querySelector('.gift-img-barrier');
+                            if (barrier) barrier.style.display = 'block';
+                        } else {
+                            item.classList.remove('selected');
+                            const barrier = item.querySelector('.gift-img-barrier');
+                            if (barrier) barrier.style.display = 'none';
+                        }
+                    });
+                }
+            }
 
-            // 立即设置新上传的图像为当前选择
-            if (type === 'mail') {
+            // 立即设置新上传的图像为当前选择（仅添加到多选，不清空其它选中）
+            if (type === 'mail' && mailSelect) {
                 mailSelect.value = imageKey;
-            } else {
-                giftSelect.value = imageKey;
+            } else if (type === 'gift') {
+                if (!window.giftSelectedKeys.includes(imageKey)) {
+                    window.giftSelectedKeys.push(imageKey);
+                }
+                const giftImgList = document.getElementById('gift-img-list');
+                if (giftImgList) {
+                    const items = giftImgList.querySelectorAll('.gift-img-item');
+                    items.forEach(item => {
+                        const key = item.dataset.key;
+                        if (window.giftSelectedKeys.includes(key)) {
+                            item.classList.add('selected');
+                            const barrier = item.querySelector('.gift-img-barrier');
+                            if (barrier) barrier.style.display = 'block';
+                        } else {
+                            item.classList.remove('selected');
+                            const barrier = item.querySelector('.gift-img-barrier');
+                            if (barrier) barrier.style.display = 'none';
+                        }
+                    });
+                }
             }
 
             // 更新预览
@@ -215,8 +338,23 @@ function updatePreview() {
     if (!mailImg || !mailImg.path) return;
 
     // 获取礼物
-    const giftKey = document.getElementById('gift-img').value;
+    let giftKey = 'none';
+    // 优先从图标选中项获取
+    const giftImgList = document.getElementById('gift-img-list');
+    if (giftImgList) {
+        const selected = giftImgList.querySelector('.selected');
+        if (selected) giftKey = selected.getAttribute('data-key');
+    } else {
+        // 兼容旧逻辑
+        const giftSelect = document.getElementById('gift-img');
+        if (giftSelect) giftKey = giftSelect.value;
+    }
     const giftImg = giftImages[giftKey];
+
+    // 获取说明位置（勾选为before，不勾选为after）
+    let textPosition = 'after';
+    const giftTextBefore = document.getElementById('gift-text-before');
+    if (giftTextBefore && giftTextBefore.checked) textPosition = 'before';
 
     // 从缓存获取或加载信纸图片
     let mailImage = mailImageCache[mailKey];
@@ -309,39 +447,103 @@ function drawPreview(canvas, ctx, mailImage, giftKey, giftImg) {
             ctx.font = `normal ${fontSize}px "Kingnammm Maiyuan 2", sans-serif`;
         }
         const signatureLines = wrapText(ctx, signature, canvas.width - 2 * marginH);
-
-        // 从底部向上绘制
+        // 判断左对齐勾选框
+        const alignLeft = document.getElementById('signature-align-left')?.checked;
+        ctx.textAlign = alignLeft ? 'left' : 'right';
+        const signatureX = alignLeft ? marginH : canvas.width - marginH;
         const signY = canvas.height - marginBottom - 80;
         for (let i = 0; i < signatureLines.length; i++) {
             const line = signatureLines[i];
-            const lineWidth = ctx.measureText(line).width;
-            const signatureX = canvas.width - marginH - lineWidth;
             ctx.fillText(line, signatureX, signY + i * (fontSize + 4));
         }
+        ctx.textAlign = 'left'; // 恢复后续绘制为默认左对齐（如礼物说明）
     }
 
-    // 绘制礼物（如果存在）
-    if (giftKey !== 'none' && giftImg && giftImg.path) {
-        // 从缓存获取或加载礼物图片
-        let giftImage = giftImageCache[giftKey];
-        if (!giftImage) {
-            giftImage = new Image();
-            giftImage.crossOrigin = "Anonymous";
-            giftImage.src = giftImg.path;
-            giftImageCache[giftKey] = giftImage;
-        }
-
-        // 礼物加载处理
-        if (giftImage.complete) {
-            drawGift(ctx, giftImage, canvas, marginBottom);
+    // 绘制多选礼物图标，按顺序排列，说明只显示一次
+    if (window.giftSelectedKeys && window.giftSelectedKeys.length > 0) {
+        const giftText = document.getElementById('gift-text').value;
+        const giftTextColor = document.getElementById('gift-text').getAttribute('data-color') || '#3c281e';
+        ctx.fillStyle = giftTextColor;
+        const giftFontSize = parseInt(document.getElementById('gift-font-size').value);
+        const giftIconSize = parseInt(document.getElementById('gift-icon-size').value);
+        const fontFamily = document.getElementById('font-family')?.value || 'Kingnammm Maiyuan 2';
+        if (fontFamily === 'Fusion Pixel 12px Monospaced zh_hans') {
+            ctx.font = `normal ${giftFontSize}px "Fusion Pixel 12px Monospaced zh_hans", monospace`;
         } else {
-            giftImage.onload = () => {
-                drawGift(ctx, giftImage, canvas, marginBottom);
-            };
-            giftImage.onerror = () => {
-                console.error("礼物图加载失败:", giftImg.path);
-            };
+            ctx.font = `normal ${giftFontSize}px "Kingnammm Maiyuan 2", sans-serif`;
         }
+        const gap = 10;
+        // 计算每个图标宽度和高度
+        let totalWidth = 0;
+        let iconWidths = [];
+        let iconHeights = [];
+        let needWait = false;
+        window.giftSelectedKeys.forEach((key, idx) => {
+            const giftImg = giftImages[key];
+            let iconW = giftIconSize;
+            let iconH = giftIconSize;
+            if (giftImg && giftImg.path) {
+                let imgObj = giftImageCache[key];
+                if (!imgObj) {
+                    imgObj = new Image();
+                    imgObj.crossOrigin = "Anonymous";
+                    imgObj.src = giftImg.path;
+                    giftImageCache[key] = imgObj;
+                }
+                if (!imgObj.complete) {
+                    needWait = true;
+                    imgObj.onload = () => {
+                        updatePreview();
+                    };
+                }
+                iconH = (imgObj.height / imgObj.width) * giftIconSize || giftIconSize;
+                iconHeights.push(iconH);
+                iconWidths.push(iconW);
+            } else {
+                iconWidths.push(iconW);
+                iconHeights.push(iconH);
+            }
+            totalWidth += iconW;
+            if (idx < window.giftSelectedKeys.length - 1) totalWidth += gap;
+        });
+        // 说明文本宽度
+        let textWidth = giftText ? ctx.measureText(giftText).width : 0;
+        // 说明前/后只加一次
+        if (giftText) {
+            if (document.getElementById('gift-text-before')?.checked) {
+                totalWidth += textWidth + gap;
+            } else {
+                totalWidth += gap + textWidth;
+            }
+        }
+        if (needWait) return;
+        // 居中起始位置
+        let x = (canvas.width - totalWidth) / 2;
+        const yGift = canvas.height - marginBottom - 30;
+        // 说明在前
+        if (giftText && document.getElementById('gift-text-before')?.checked) {
+            ctx.fillText(giftText, x, yGift + iconHeights[0]/2 + giftFontSize/3);
+            x += textWidth + gap;
+        }
+        // 绘制所有图标
+        window.giftSelectedKeys.forEach((key, idx) => {
+            const giftImg = giftImages[key];
+            let imgObj = giftImageCache[key];
+            if (!imgObj) {
+                imgObj = new Image();
+                imgObj.crossOrigin = "Anonymous";
+                imgObj.src = giftImg.path;
+                giftImageCache[key] = imgObj;
+            }
+            let iconW = iconWidths[idx];
+            let iconH = iconHeights[idx];
+            ctx.drawImage(imgObj, x, yGift, iconW, iconH);
+            // 最后一个图标后显示说明（如果选后）
+            if (giftText && !document.getElementById('gift-text-before')?.checked && idx === window.giftSelectedKeys.length - 1) {
+                ctx.fillText(giftText, x + iconW + gap, yGift + iconH/2 + giftFontSize/3);
+            }
+            x += iconW + gap;
+        });
     }
 }
 
@@ -352,7 +554,8 @@ function drawGift(ctx, giftImage, canvas, marginBottom) {
     ctx.fillStyle = giftTextColor;
     const giftFontSize = parseInt(document.getElementById('gift-font-size').value);
     const giftIconSize = parseInt(document.getElementById('gift-icon-size').value);
-    const textPosition = document.getElementById('gift-text-position').value;
+    // textPosition参数由drawPreview传入
+    const textPosition = arguments[4] || 'after';
 
     // 调整礼物图标大小
     const scaledWidth = giftIconSize;
