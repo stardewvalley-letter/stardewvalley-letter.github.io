@@ -255,14 +255,24 @@ function drawPreview(canvas, ctx, mailImage, giftKey, giftImg) {
     const marginTop = parseInt(document.getElementById('margin-top').value);
     const marginBottom = parseInt(document.getElementById('margin-bottom').value);
     const marginH = parseInt(document.getElementById('margin-h').value);
-
-    ctx.font = `${fontSize}px "Kingnammm Maiyuan 2"`;
+    let fontFamily = document.getElementById('font-family')?.value || 'Kingnammm Maiyuan 2';
+    // 只设置目标字体和通用后备，避免混合主字体
+    if (fontFamily === 'Fusion Pixel 12px Monospaced zh_hans') {
+        ctx.font = `normal ${fontSize}px "Fusion Pixel 12px Monospaced zh_hans", monospace`;
+    } else {
+        ctx.font = `normal ${fontSize}px "Kingnammm Maiyuan 2", sans-serif`;
+    }
     ctx.fillStyle = '#3c281e';
 
     // 绘制标题
     const title = document.getElementById('title').value;
     const titleColor = document.getElementById('title').getAttribute('data-color') || '#3c281e';
     ctx.fillStyle = titleColor;
+    if (fontFamily === 'Fusion Pixel 12px Monospaced zh_hans') {
+        ctx.font = `normal ${fontSize}px "Fusion Pixel 12px Monospaced zh_hans", monospace`;
+    } else {
+        ctx.font = `normal ${fontSize}px "Kingnammm Maiyuan 2", sans-serif`;
+    }
     const titleLines = wrapText(ctx, title, canvas.width - 2 * marginH);
     let y = marginTop;
 
@@ -275,6 +285,11 @@ function drawPreview(canvas, ctx, mailImage, giftKey, giftImg) {
     const body = document.getElementById('body').value;
     const bodyColor = document.getElementById('body').getAttribute('data-color') || '#3c281e';
     ctx.fillStyle = bodyColor;
+    if (fontFamily === 'Fusion Pixel 12px Monospaced zh_hans') {
+        ctx.font = `normal ${fontSize}px "Fusion Pixel 12px Monospaced zh_hans", monospace`;
+    } else {
+        ctx.font = `normal ${fontSize}px "Kingnammm Maiyuan 2", sans-serif`;
+    }
     const bodyLines = wrapText(ctx, body, canvas.width - 2 * marginH);
 
     y += 10;
@@ -288,7 +303,11 @@ function drawPreview(canvas, ctx, mailImage, giftKey, giftImg) {
     const signatureColor = document.getElementById('signature').getAttribute('data-color') || '#3c281e';
     ctx.fillStyle = signatureColor;
     if (signature) {
-        ctx.font = `${fontSize}px "Kingnammm Maiyuan 2"`;
+        if (fontFamily === 'Fusion Pixel 12px Monospaced zh_hans') {
+            ctx.font = `normal ${fontSize}px "Fusion Pixel 12px Monospaced zh_hans", monospace`;
+        } else {
+            ctx.font = `normal ${fontSize}px "Kingnammm Maiyuan 2", sans-serif`;
+        }
         const signatureLines = wrapText(ctx, signature, canvas.width - 2 * marginH);
 
         // 从底部向上绘制
@@ -340,7 +359,12 @@ function drawGift(ctx, giftImage, canvas, marginBottom) {
     const scaledHeight = (giftImage.height / giftImage.width) * giftIconSize;
 
     // 设置礼物文字样式
-    ctx.font = `${giftFontSize}px "Kingnammm Maiyuan 2"`;
+    const fontFamily = document.getElementById('font-family')?.value || 'Kingnammm Maiyuan 2';
+    if (fontFamily === 'Fusion Pixel 12px Monospaced zh_hans') {
+        ctx.font = `normal ${giftFontSize}px "Fusion Pixel 12px Monospaced zh_hans", monospace`;
+    } else {
+        ctx.font = `normal ${giftFontSize}px "Kingnammm Maiyuan 2", sans-serif`;
+    }
     const textWidth = giftText ? ctx.measureText(giftText).width : 0;
     const gap = 10;
 
@@ -600,6 +624,55 @@ window.addEventListener('resize', positionPreviewPanel);
 window.addEventListener('scroll', positionPreviewPanel);
 window.addEventListener('DOMContentLoaded', positionPreviewPanel);
 
+
 window.addEventListener('resize', adjustCanvasSize);
 adjustCanvasSize(); // 初始化时调整画布大小
+
+// 修复canvas首次切换字体后中文不显示的问题
+// 通过DOM强制触发字体渲染后再刷新预览
+// 适用于所有字体切换场景
+
+// 替换 handleFontChange 实现
+window.handleFontChange = async function() {
+    const val = document.getElementById('font-family').value;
+    const previewPanel = document.querySelector('.preview-panel');
+    if (previewPanel) {
+        if (val === 'Fusion Pixel 12px Monospaced zh_hans') {
+            previewPanel.style.fontFamily = '"Fusion Pixel 12px Monospaced zh_hans"';
+            previewPanel.style.fontWeight = 'normal';
+        } else {
+            previewPanel.style.fontFamily = '"Kingnammm Maiyuan 2", sans-serif';
+            previewPanel.style.fontWeight = '';
+        }
+    }
+    const fontSize = parseInt(document.getElementById('font-size').value) || 42;
+    let fontStr;
+    if (val === 'Fusion Pixel 12px Monospaced zh_hans') {
+        fontStr = `${fontSize}px "Fusion Pixel 12px Monospaced zh_hans"`;
+    } else {
+        fontStr = `${fontSize}px "Kingnammm Maiyuan 2"`;
+    }
+    try {
+        await document.fonts.load(fontStr);
+        await document.fonts.ready;
+        // 用DOM强制触发字体渲染，解决canvas首次切换不生效问题
+        const testDiv = document.createElement('div');
+        testDiv.style.font = fontStr;
+        testDiv.textContent = '通过该隐藏文本达到激活切换字体作用123abc，玛丽有架录音机';
+        testDiv.style.position = 'absolute';
+        testDiv.style.opacity = '0';
+        document.body.appendChild(testDiv);
+        setTimeout(() => {
+            document.body.removeChild(testDiv);
+            updatePreview();
+        }, 800);
+        return;
+    } catch (e) {
+        updatePreview();
+    }
+}
+
+document.getElementById('font-family').addEventListener('change', handleFontChange);
+
+
 
