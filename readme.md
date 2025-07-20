@@ -14,14 +14,21 @@
 
 ## 更新说明
 
-2025年7月19日：
+**2025年7月20日：**
+
+修改：礼物展示样式由选择框变更为图标
+
+添加：可以多选礼物
+
+
+**2025年7月19日：**
 
 添加: 像素字体支持（source: [缝合像素字体 12px Monospaced - ZeoSeven Fonts, 释放字体自由 | WebFontsAPI &amp; FontsPKG](https://fonts.zeoseven.com/items/570/)）
 
 修改：字体颜色选择框添加星露谷色系风格
 
 
-2025年7月12日:
+**2025年7月12日:**
 
 添加: 资源加载动画
 
@@ -32,7 +39,7 @@
 修复: 预览时重复加载资源问题
 
 
-2025年7月6日:
+**2025年7月6日:**
 
 初版完成, 功能基本可用，字体源：[荆南麦圆体 - ZeoSeven Fonts, 释放字体自由 | WebFontsAPI &amp; FontsPKG](https://fonts.zeoseven.com/items/116/)
 
