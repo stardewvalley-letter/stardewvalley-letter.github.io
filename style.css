@@ -217,6 +217,7 @@ button.color-settings img {
     position: relative;
     vertical-align: middle;
     transition: border-color 0.2s, box-shadow 0.2s;
+    cursor: url('assets/cursor_default.cur'), auto !important;
 }
 #signature-align-left:hover {
     border-color: var(--stardew-green);
@@ -254,6 +255,7 @@ button.color-settings img {
     position: relative;
     vertical-align: middle;
     transition: border-color 0.2s, box-shadow 0.2s;
+    cursor: url('assets/cursor_default.cur'), auto !important;
 }
 #gift-text-before:hover {
     border-color: var(--stardew-green);
@@ -297,6 +299,7 @@ button.color-settings img {
     cursor: pointer;
     transition: border-color 0.2s, box-shadow 0.2s;
     position: relative;
+    cursor: url('assets/cursor_default.cur'), auto !important;
 }
 .gift-img-item.selected {
     border-color: var(--stardew-green);
@@ -327,7 +330,7 @@ button.color-settings img {
     }
 
     .preview-wrapper {
-        flex: 1;
+        flex: 1; 
         position: relative;
         min-height: 1000px; /* 确保至少有400px的高度 */
         height: 100%; /* 使预览区的高度与父容器一致 */
@@ -620,4 +623,18 @@ button.color-settings img {
     color: #ff9e3f; /* 设置 hover 时的颜色变化 */
     text-decoration: underline; /* 添加下划线 */
     cursor: url('assets/cursor_insert.cur'), auto;
+}
+
+.delete-gift-btn, .delete-mail-btn {
+    transition: background 0.2s;
+}
+.delete-gift-btn:hover, .delete-mail-btn:hover {
+    background: #ffdddd !important;
+}
+
+.delete-gift-btn,
+.delete-gift-btn:hover,
+.delete-mail-btn,
+.delete-mail-btn:hover {
+    cursor: url('assets/cursor_default.cur'), auto !important;
 }

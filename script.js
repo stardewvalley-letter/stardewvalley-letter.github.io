@@ -15,6 +15,9 @@ window.addEventListener('DOMContentLoaded', () => {
     // 初始渲染
     updatePreview();
 
+    // 载入自定义图片
+    loadCustomImages();
+
     // 监听署名左对齐勾选框，切换预览区署名对齐方式
     const alignCheckbox = document.getElementById('signature-align-left');
     if (alignCheckbox) {
@@ -45,8 +48,15 @@ function loadDefaultImages() {
             name: file.replace('_', ' ').replace('.png', ''),
             path: `assets/mail_img/${file}`
         };
+        // 预加载信纸图片
+        if (!mailImageCache[key]) {
+            const image = new Image();
+            image.crossOrigin = "Anonymous";
+            image.src = mailImages[key].path;
+            mailImageCache[key] = image;
+        }
     });
-    
+
     // 添加礼物
     giftFiles.forEach(file => {
         const key = file.replace('.png', '');
@@ -54,6 +64,13 @@ function loadDefaultImages() {
             name: file.replace('.png', ''),
             path: `assets/gift_img/${file}`
         };
+        // 预加载礼物图片
+        if (!giftImageCache[key]) {
+            const image = new Image();
+            image.crossOrigin = "Anonymous";
+            image.src = giftImages[key].path;
+            giftImageCache[key] = image;
+        }
     });
     
     // 添加"无"选项
@@ -86,8 +103,15 @@ function populateImageSelectors() {
         const option = document.createElement('option');
         option.value = key;
         option.textContent = img.name;
+
+        // 仅自定义信纸添加删除按钮
+        if (key.startsWith('custom_')) {
+            option.textContent += ' 🗑';
+            option.style.position = 'relative';
+            option.style.paddingRight = '30px';
+            option.classList.add('custom-mail-option');
+        }
         mailSelect.appendChild(option);
-        // 设置默认选择为regular_horizontal
         if (key === 'regular_horizontal') {
             option.selected = true;
         }
@@ -109,8 +133,6 @@ function populateImageSelectors() {
             div.className = 'gift-img-item';
             div.setAttribute('data-key', key);
             div.title = img.name;
-            // 判断是否有图片路径
-            // 统一结构，遮罩始终在gift-img-item最顶层
             div.style.position = 'relative';
             let inner = '';
             if (img.path) {
@@ -118,15 +140,48 @@ function populateImageSelectors() {
             } else {
                 inner += `<span style="width:45px;height:45px;display:flex;align-items:center;justify-content:center;color:#bbb;font-size:18px;background:#f8f2e0;border-radius:8px;border:1px solid #c2a36b;">${img.name || '无图'}</span>`;
             }
-            // 遮罩始终在最顶层
+            // 遮罩
             inner += `<img class="gift-img-barrier" src="assets/selected.png" style="display:none;position:absolute;left:0;top:0;width:45px;height:45px;pointer-events:none;z-index:10;" alt="selected">`;
+
+            // 仅自定义图标添加删除按钮
+            if (key.startsWith('custom_')) {
+                inner += `<div class="delete-gift-btn" title="删除" style="
+                    position:absolute;
+                    top:0;right:0;
+                    width:5px;height:5px;
+                    background:rgba(255,255,255,0.7);
+                    border-radius:20%;
+                    z-index:20;
+                    cursor:pointer;
+                    display:flex;
+                    align-items:center;
+                    justify-content:center;
+                    box-shadow:0 1px 2px #c2a36b;
+                ">
+                    <img src="assets/close_u.png" alt="删除" style="width:16px;height:16px;display:block;">
+                </div>`;
+            }
             div.innerHTML = inner;
             giftImgList.appendChild(div);
         }
 
-        // giftSelectedKeys始终为全局变量，不被重置
-        // 点击切换为多选
-        giftImgList.addEventListener('click', function(e) {
+        // 绑定事件
+        giftImgList.onclick = function(e) {
+            // 判断是否点击了 delete-gift-btn 或其子元素
+            const deleteBtn = e.target.closest('.delete-gift-btn');
+            if (deleteBtn) {
+                const parent = deleteBtn.closest('.gift-img-item');
+                const key = parent.getAttribute('data-key');
+                // if (confirm('确定要删除这个自定义礼物图标吗？')) {
+                    deleteImage('giftImages', key).then(() => {
+                        loadCustomImages();
+                    });
+                // }
+                // 阻止事件冒泡，防止多选逻辑被触发
+                e.stopPropagation();
+                return;
+            }
+            // 多选逻辑（原有代码）
             let target = e.target;
             while (target && !target.classList.contains('gift-img-item')) {
                 target = target.parentElement;
@@ -134,7 +189,6 @@ function populateImageSelectors() {
             if (target) {
                 const key = target.getAttribute('data-key');
                 if (key === 'none') {
-                    // 选择“无”时清空所有选中
                     window.giftSelectedKeys = [];
                     Array.from(giftImgList.children).forEach(item => {
                         item.classList.remove('selected');
@@ -144,14 +198,12 @@ function populateImageSelectors() {
                     updatePreview();
                     return;
                 }
-                // 只有当前key未被选中时才加入
                 if (!window.giftSelectedKeys.includes(key)) {
                     window.giftSelectedKeys.push(key);
                     target.classList.add('selected');
                     const barrier = target.querySelector('.gift-img-barrier');
                     if (barrier) barrier.style.display = 'block';
                 } else {
-                    // 已选中则取消
                     window.giftSelectedKeys = window.giftSelectedKeys.filter(k => k !== key);
                     target.classList.remove('selected');
                     const barrier = target.querySelector('.gift-img-barrier');
@@ -159,8 +211,46 @@ function populateImageSelectors() {
                 }
                 updatePreview();
             }
-        });
+        };
     }
+
+    // 信纸删除按钮事件
+    const mailCustomListDiv = document.getElementById('mail-custom-list');
+    if (mailCustomListDiv) mailCustomListDiv.innerHTML = '';
+    for (const [key, img] of Object.entries(mailImages)) {
+        if (key.startsWith('custom_')) {
+            const item = document.createElement('div');
+            item.style.display = 'inline-flex';
+            item.style.alignItems = 'center';
+            item.style.marginRight = '10px';
+            item.innerHTML = `<span style="margin-right:4px;">${img.name}</span>
+                <div class="delete-mail-btn" data-key="${key}" title="删除" style="
+                    width:22px;height:22px;
+                    background:rgba(255,255,255,0.7);
+                    border-radius:20%;
+                    cursor:pointer;
+                    display:flex;
+                    align-items:center;
+                    justify-content:center;
+                    margin-left:4px;
+                    box-shadow:0 1px 2px #c2a36b;
+                ">
+                    <img src="assets/close_u.png" alt="删除" style="width:16px;height:16px;display:block;">
+                </div>`;
+            mailCustomListDiv.appendChild(item);
+        }
+    }
+    // 事件绑定
+    mailCustomListDiv.querySelectorAll('.delete-mail-btn').forEach(btn => {
+        btn.onclick = function(e) {
+            const key = btn.getAttribute('data-key');
+            // if (confirm('确定要删除这个自定义信纸吗？')) {
+                deleteImage('mailImages', key).then(() => {
+                    loadCustomImages();
+                });
+            // }
+        };
+    });
 }
 
 // 设置事件监听器
@@ -187,15 +277,29 @@ function setupEventListeners() {
     
     // 上传按钮
     document.getElementById('upload-mail').addEventListener('click', () => {
-        uploadImage('mail');
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.onchange = e => {
+            const file = e.target.files[0];
+            handleUpload('mail', file);
+        };
+        input.click();
     });
-    
+
     document.getElementById('upload-gift').addEventListener('click', () => {
-        uploadImage('gift');
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.onchange = e => {
+            const file = e.target.files[0];
+            handleUpload('gift', file);
+        };
+        input.click();
     });
     
     // 保存按钮
-    document.getElementById('save-btn').addEventListener('click', saveImage);
+    document.getElementById('save-btn').addEventListener('click', saveCanvasImage);
 }
 
 // 上传图片处理
@@ -590,11 +694,10 @@ function drawGift(ctx, giftImage, canvas, marginBottom) {
     }
 }
 
-// 保存图片
-function saveImage() {
+// 保存图片（canvas 导出 PNG）
+function saveCanvasImage() {
     const canvas = document.getElementById('preview-canvas');
     const link = document.createElement('a');
-    
     link.download = '星露谷信件.png';
     link.href = canvas.toDataURL('image/png');
     link.click();
@@ -876,6 +979,151 @@ window.handleFontChange = async function() {
 }
 
 document.getElementById('font-family').addEventListener('change', handleFontChange);
+
+// IndexedDB 相关代码
+const DB_NAME = 'stardew_letter_assets';
+const DB_VERSION = 1;
+let db = null;
+
+// 打开数据库
+function openDB() {
+    return new Promise((resolve, reject) => {
+        if (db) return resolve(db);
+        const request = indexedDB.open(DB_NAME, DB_VERSION);
+        request.onerror = () => reject(request.error);
+        request.onsuccess = () => {
+            db = request.result;
+            resolve(db);
+        };
+        request.onupgradeneeded = (e) => {
+            db = e.target.result;
+            if (!db.objectStoreNames.contains('mailImages')) {
+                db.createObjectStore('mailImages', { keyPath: 'key' });
+            }
+            if (!db.objectStoreNames.contains('giftImages')) {
+                db.createObjectStore('giftImages', { keyPath: 'key' });
+            }
+        };
+    });
+}
+
+// 添加图片
+async function saveImage(storeName, { key, name, data, type }) {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction(storeName, 'readwrite');
+        tx.objectStore(storeName).put({ key, name, data, type });
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+    });
+}
+
+// 读取所有图片
+async function getAllImages(storeName) {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction(storeName, 'readonly');
+        const req = tx.objectStore(storeName).getAll();
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+    });
+}
+
+// 删除图片
+async function deleteImage(storeName, key) {
+    const db = await openDB();
+    return new Promise((resolve, reject) => {
+        const tx = db.transaction(storeName, 'readwrite');
+        tx.objectStore(storeName).delete(key);
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+    });
+}
+
+// 处理文件上传
+async function handleUpload(type, file) {
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+        alert('单张图片不能超过5MB！');
+        return;
+    }
+    const key = `custom_${Date.now()}_${file.name}`; // 统一加 custom_ 前缀
+    const name = file.name;
+    const data = file;
+    const mime = file.type;
+
+    await saveImage(type === 'mail' ? 'mailImages' : 'giftImages', {
+        key, name, data, type: mime
+    });
+    await loadCustomImages(); // 刷新页面上的图片列表
+}
+
+// 自定义图片加载
+async function loadCustomImages() {
+    function revokeCustomImageURLs(images) {
+        for (const key in images) {
+            const img = images[key];
+            if (img && img.path && img.path.startsWith('blob:')) {
+                URL.revokeObjectURL(img.path);
+            }
+        }
+    }
+
+    // 释放旧的 blob URL
+    revokeCustomImageURLs(mailImages);
+    revokeCustomImageURLs(giftImages);
+
+    // 清除旧的自定义图片
+    for (const key in mailImages) {
+        if (key.startsWith('custom_')) delete mailImages[key];
+    }
+    for (const key in giftImages) {
+        if (key.startsWith('custom_')) delete giftImages[key];
+    }
+    for (const key in mailImageCache) {
+        if (key.startsWith('custom_')) delete mailImageCache[key];
+    }
+    for (const key in giftImageCache) {
+        if (key.startsWith('custom_')) delete giftImageCache[key];
+    }
+
+    // 信纸
+    const mailList = await getAllImages('mailImages');
+    mailList.forEach(img => {
+        const url = URL.createObjectURL(img.data);
+        mailImages[img.key] = {
+            name: img.name,
+            path: url
+        };
+        // 预加载信纸图片
+        if (!mailImageCache[img.key]) {
+            const image = new Image();
+            image.crossOrigin = "Anonymous";
+            image.src = url;
+            mailImageCache[img.key] = image;
+        }
+    });
+
+    // 礼物图标
+    const giftList = await getAllImages('giftImages');
+    giftList.forEach(img => {
+        const url = URL.createObjectURL(img.data);
+        giftImages[img.key] = {
+            name: img.name,
+            path: url
+        };
+        // 预加载礼物图片
+        if (!giftImageCache[img.key]) {
+            const image = new Image();
+            image.crossOrigin = "Anonymous";
+            image.src = url;
+            giftImageCache[img.key] = image;
+        }
+    });
+
+    // 刷新页面选择器
+    populateImageSelectors();
+}
 
 
 
