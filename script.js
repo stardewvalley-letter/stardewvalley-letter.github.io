@@ -251,6 +251,26 @@ function populateImageSelectors() {
             // }
         };
     });
+
+    // 恢复礼物多选遮罩
+    if (window.giftSelectedKeys && window.giftSelectedKeys.length > 0) {
+        const giftImgList = document.getElementById('gift-img-list');
+        if (giftImgList) {
+            const items = giftImgList.querySelectorAll('.gift-img-item');
+            items.forEach(item => {
+                const key = item.dataset.key;
+                if (window.giftSelectedKeys.includes(key)) {
+                    item.classList.add('selected');
+                    const barrier = item.querySelector('.gift-img-barrier');
+                    if (barrier) barrier.style.display = 'block';
+                } else {
+                    item.classList.remove('selected');
+                    const barrier = item.querySelector('.gift-img-barrier');
+                    if (barrier) barrier.style.display = 'none';
+                }
+            });
+        }
+    }
 }
 
 // 设置事件监听器
