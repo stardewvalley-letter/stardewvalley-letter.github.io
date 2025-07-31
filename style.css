@@ -167,7 +167,7 @@ button:hover {
     border: 3px solid var(--stardew-brown);
     border-radius: 10px;
     padding: 15px;
-    min-height: 600px;
+    min-height: auto;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -360,7 +360,7 @@ button.color-settings img {
     .preview-panel {
         position: static; /* 平板设备取消固定定位 */
         transform: none;
-        width: 100%;
+        width: 95%;
         max-height: none;
         margin-top: 20px;
     }
@@ -373,9 +373,10 @@ button.color-settings img {
 /* 小屏布局：上下排列 */
 @media (max-width: 768px) {
     .preview-wrapper {
-        display: none;
+        /* display: none; */
         position: static;
-        width: 100%;       /* 宽度自适应 */
+        transform: none;
+        width: 95%;       /* 宽度自适应 */
         max-height: none;
         margin-top: 20px;  /* 给 preview-wrapper 添加间距，避免贴着 editor-container */
     }
@@ -390,6 +391,11 @@ button.color-settings img {
         position: static;  /* 小屏下，取消悬浮 */
         width: 100%;       /* 宽度自适应 */
         max-height: none;
+    }
+
+
+    .contact-modal {
+        font-size: 10px !important;
     }
 }
 
@@ -409,6 +415,10 @@ button.color-settings img {
 
     button {
         font-size: 16px;
+    }
+
+    .contact-modal {
+        font-size: 10px !important;
     }
 }
 
@@ -497,7 +507,8 @@ button.color-settings img {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 1000px;
+    width: 80%;
+    height: 85%;
     background-color: rgba(139, 90, 43, 0.9); /* 星露谷风格的背景 */
     border-radius: 10px;
     padding: 20px;
